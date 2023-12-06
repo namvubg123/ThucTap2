@@ -20,7 +20,7 @@ import MapLocation from "../../components/Map";
 import { Col, Row, Card } from "antd";
 import Banner from "../../components/banner";
 import "./ProductDetail.css";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
 
@@ -48,6 +48,7 @@ export default function ProductDetail() {
     };
     getPost();
   }, [id]);
+  console.log(post);
 
   return (
     <div>
@@ -187,8 +188,8 @@ export default function ProductDetail() {
                           <strong>6</strong>
                         </span>
                         <span className="detail-item-type">
-                          Available from:
-                          <strong>25.05.2020</strong>
+                          Tình trạng:
+                          <strong>Còn phòng</strong>
                         </span>
                       </div>
                     </Col>
@@ -243,7 +244,9 @@ export default function ProductDetail() {
                       <img src="https://homeradar.kwst.net/images/all/1.jpg" />
                     </div>
                     <div className="profile-info">
-                      <h4 className="profile-name">Jessie Wilcox</h4>
+                      <Link to={`/?user=${post.owner}`} className="link">
+                        <h4 className="profile-name">{post.owner}</h4>
+                      </Link>
                       <span className="profile-des">
                         <span>22</span>Property Listings
                       </span>

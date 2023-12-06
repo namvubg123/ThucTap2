@@ -47,10 +47,10 @@ const postController = {
 
   getAllPosts: async (req, res) => {
     try {
-      const username = req.query.user;
+      const owner = req.query.user;
       let posts;
-      if (username) {
-        posts = await Post.find({ username });
+      if (owner) {
+        posts = await Post.find({ owner });
       } else {
         posts = await Post.find();
       }
