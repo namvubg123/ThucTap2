@@ -1,0 +1,74 @@
+.dashboard-menu{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+    background-color: rgb(245, 247, 251);
+    position: relative;
+    top: 73px;
+    /* padding: 30px 0 0; */
+}
+
+.dashboard-menu .ant-tabs .ant-tabs-nav .ant-tabs-nav-wrap {
+    height: 100%;
+    background-color: #fff;
+    width: 300px;
+    padding-top: 40px;
+    /* position: fixed; */
+}
+
+.dashboard-menu .ant-tabs .ant-tabs-content-holder {
+    padding-top: 40px;
+}
+
+.user-menu{
+    z-index: 20;
+    border-right: 1px solid #eee;
+    box-shadow: 0 5px 5px rgba(0,0,0,0.07);
+    width: 20.8333333%;
+    background-color: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.no-list-style li{
+    font-weight: 500;
+    color: #000;
+    position: relative;
+    display: block;
+    border-top: 1px solid #eee;
+    padding: 15px 20px 15px 20px; 
+}
+
+.list-news{
+    background-color: #f9f9f9;
+}
+.list-news::before{
+    background: #3270FC;
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0px;
+    bottom: 0;
+    width: 10px;
+}
+
+.profile{
+    border-bottom: 1px solid #eee; 
+}
+
+.dashboard-menu-footer{
+    font-size: 10px;
+    color: #111827;
+    font-weight: 650;
+    padding: 20px 20px 20px 20px;
+    border-top: 1px solid #eee;
+    width: 300px;
+    z-index: 100;
+}
+
+/* Container */
+
+
+

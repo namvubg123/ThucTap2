@@ -1,0 +1,90 @@
+/* overlay when hover in geodir-img */
+.geodir-img:hover .content {
+    opacity: 0.4;
+}
+
+.listing-fillter {
+    margin-left: 660px
+}
+
+.fl-wrap {
+    width: 392px;
+}
+
+.content {
+    background-color: #000;
+    opacity: 0.25;
+    height: 100%;
+    position: relative;
+}
+
+.contact-product {
+    font-weight: 600;
+    font-size: 11px;
+    color: #3270fc;
+    /* padding-left: 15px; */
+    height: 100%;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+
+.contact-share {
+    height: 100%;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+
+}
+
+.cat-otp {
+    z-index: 20;
+    padding: 7px 20px;
+    color: #fff;
+    background-color: #3270fc;
+    border-radius: 2px;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.25;
+    transition: all 200ms linear;
+    z-index: 3;
+}
+
+.geodir-content {
+    padding: 20px 20px 10px 20px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    margin-bottom: 20px;
+}
+
+.price {
+    color: #3270fc;
+    font-weight: 500;
+    font-size: 18px;
+    padding: 2px 0px;
+
+}
+
+.content-details span {
+    color: #000;
+    margin-right: 20px;
+    font-size: 12px;
+}
+
+.rate {
+    margin-top: 15px;
+    padding-top: 6px;
+    display: flex;
+}

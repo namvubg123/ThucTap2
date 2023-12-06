@@ -1,0 +1,90 @@
+.scroll{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #fff;
+    padding: 0 30px;
+    transition: all 200ms linear;
+    width: 100%;
+    z-index: 50;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.07);
+}
+
+.boder {
+    color: #eee;
+}
+
+.count {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    font-size: 10px;
+    color: #fff;
+    box-shadow: 0px 0px 0px 4px #fff;
+    border-radius: 50%;
+    background: #3270FC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-header-search {
+    background-color: #f5f7fb;
+    margin-right: 110px;
+    padding: 12px 40px 12px 40px;
+    border-radius: 30px;
+    display: flex;
+    margin-top: 4px;
+    align-items: center;
+}
+
+
+.btn-add {
+    display: flex;
+    background-color: #3270FC;
+    color: #fff;
+    padding: 12px 25px 12px 25px;
+    border-radius: 5px;
+    margin-left: 6px;
+    align-items: center;
+
+}
+
+.icon-add{
+    
+    background-color: #ffffff33;
+    border-radius: 50px;
+}
+
+.btn-add:hover{
+    background: linear-gradient(to right, #3C6AFD, #57C7FA);
+}
+
+.content-body {
+    padding: 0 40px;
+}
+
+.logo-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.title-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.title-logo h3 {
+    color: #051259;
+    font-weight: 800;
+    font-size: 28px;
+}
