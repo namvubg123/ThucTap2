@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 import { SearchOutlined, UserOutlined, BellOutlined } from "@ant-design/icons";
 import { PlusCircleOutlined } from "@ant-design/icons";
@@ -13,6 +13,7 @@ import {
 import Register from "../../Register";
 import "./Heade.css";
 import Cookies from "js-cookie";
+import { Context } from "../../../context/Context";
 
 const items = [
   {
@@ -50,20 +51,17 @@ export default function Header() {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const { user, dispatch } = useContext(Context);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const UserName = sessionStorage.getItem("User");
-  const SetUserName = JSON.parse(UserName);
+  const lastName = user ? user.lastName : null;
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
       setIsLoggedIn(true);
+      setIsModalOpen(false);
     } else {
       setIsLoggedIn(false);
     }
@@ -131,9 +129,7 @@ export default function Header() {
                 >
                   <UserOutlined />
                   <span className="ml-3">
-                    {isLoggedIn && SetUserName
-                      ? SetUserName.lastName
-                      : "Đăng nhập"}
+                    {isLoggedIn && lastName ? lastName : "Đăng nhập"}
                   </span>
                 </button>
                 <Modal

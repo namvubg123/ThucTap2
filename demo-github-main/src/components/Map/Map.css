@@ -12,17 +12,16 @@
 }
 
 .pin {
-  display: flex;
-  align-items: center;
   width: 180px;
-  color: #3270fc;
+  color: red;
+  display: flex;
 }
 
 .pin-icon {
-  font-size: 4rem;
+  font-size: 3rem;
 }
 
 .pin-text {
   font-size: 1.3em;
-  color: rgb(233, 12, 12) 000;
+  color: red;
 }

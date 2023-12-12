@@ -56,7 +56,7 @@ export default function ItemProduct({ post }) {
                         <div className="">
                           <FontAwesomeIcon icon={faLocationDot} />
                           <span className="ml-1 text-white">
-                            {post.location}
+                            {post.address}
                           </span>
                         </div>
                       </div>

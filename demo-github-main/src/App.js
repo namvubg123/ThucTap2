@@ -1,36 +1,43 @@
-import './App.css';
-import React, { useEffect, useState } from 'react';
+import "./App.css";
+import React, { useEffect, useState } from "react";
 import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
 import RoutersConfig from "./routes/RoutersConfig";
-import { useLocation } from 'react-router-dom'
+import { useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import DefaultLayoutAdmin from "./admin/components/DefaultLayoutAdmin";
+import AdminProducts from "./admin/page/Products";
+import AdminUsers from "./admin/page/Users";
+
 function App() {
-  const [show, setshow] = useState(true);
+  const [showHeader, setShowHeader] = useState(true);
+  const [showFooter, setShowFooter] = useState(true);
   const location = useLocation();
   useEffect(() => {
     if (location.pathname === "/addlisting") {
-      setshow(false);
+      setShowHeader(true);
+      setShowFooter(false);
+    } else if (location.pathname.startsWith("/admin")) {
+      setShowHeader(false);
+      setShowFooter(false);
     } else {
-      setshow(true);
+      setShowHeader(true);
+      setShowFooter(true);
     }
-  })
+  }, [location]);
 
   return (
     <div className="App">
-      <div>
-        <Header />
-      </div>
-      <RoutersConfig />
-      <div>
-        {show == true && <Footer />}
-      </div>
+      {showHeader && <Header />}
+      <Routes>
+        <Route path="admin" element={<DefaultLayoutAdmin />} />
+        <Route path="/products" element={<AdminProducts />} />
+        <Route path="/users" element={<AdminUsers />} />
+        <Route path="/*" element={<RoutersConfig />} />
+      </Routes>
+      {showFooter && <Footer />}
     </div>
   );
-
-
-
 }
 
-
 export default App;
-

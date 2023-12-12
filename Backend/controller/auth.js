@@ -51,33 +51,6 @@ const auth = {
       { expiresIn: "365d" }
     );
   },
-  // loginUser: async (req, res) => {
-  //   try {
-  // const user = await User.findOne({ username: req.body.username });
-  // if (!user) {
-  //   res.status(404).json("Wrong username");
-  // }
-  //     const validPassword = bcrypt.compare(req.body.password, user.password);
-  //     if (!validPassword) {
-  //       res.status(404).json("Wrong password");
-  //     }
-  //     if (user && validPassword) {
-  //       const token = auth.createAccessToken(user);
-  //       token.push(token);
-  //       //STORE REFRESH TOKEN IN COOKIE
-  //       res.cookie("token", token, {
-  //         httpOnly: true,
-  //         secure: false,
-  //         path: "/",
-  //         sameSite: "strict",
-  //       });
-  //       const { password, ...others } = user._doc;
-  //       return res.status(200).json({ ...others, accessToken });
-  //     }
-  //   } catch (err) {
-  //     //res.status(500).json(err);
-  //   }
-  // },
 
   loginUser: (req, res) => {
     User.findOne({ username: req.body.username }).exec(async (error, user) => {

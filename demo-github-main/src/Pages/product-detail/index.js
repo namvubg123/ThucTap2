@@ -34,13 +34,14 @@ export default function ProductDetail() {
       try {
         const res = await axios.get("/post/get/" + id);
         setPost(res.data);
+        console.log(res.data);
         setLocation({
           center: {
             lat: Number.parseFloat(res.data?.locationX),
             lng: Number.parseFloat(res.data?.locationY),
           },
           zoom: 18,
-          address: res.data?.location,
+          address: res.data?.address,
         });
       } catch (error) {
         throw new Error(error);
@@ -48,7 +49,6 @@ export default function ProductDetail() {
     };
     getPost();
   }, [id]);
-  console.log(post);
 
   return (
     <div>
@@ -184,7 +184,7 @@ export default function ProductDetail() {
                           </strong>
                         </span>
                         <span className="detail-item-type">
-                          Số phòng:
+                          Số người ở:
                           <strong>6</strong>
                         </span>
                         <span className="detail-item-type">
@@ -233,7 +233,7 @@ export default function ProductDetail() {
                   </Row>
                 </div>
 
-                <MapLocation location={location} zoomLevel={14} />
+                <MapLocation location={location} zoomLevel={18} />
               </Card>
             </Col>
             <Col className="gutter-row" span={8}>

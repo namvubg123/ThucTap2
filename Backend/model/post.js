@@ -10,11 +10,14 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    phone: {
+      type: Number,
+    },
     price: {
       type: Number,
       required: true,
     },
-    location: {
+    address: {
       type: String,
       required: true,
     },

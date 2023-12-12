@@ -14,11 +14,7 @@ router.post(
 router.get("/post/getPost", postController.getAllPosts);
 
 // Get a post by ID
-router.get(
-  "/post/get/:id",
-  middlewareController.verifyToken,
-  postController.getPostById
-);
+router.get("/post/get/:id", postController.getPostById);
 
 // Update a post
 router.put(
