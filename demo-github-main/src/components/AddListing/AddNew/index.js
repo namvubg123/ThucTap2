@@ -27,7 +27,6 @@ import { Select, Checkbox, Divider } from "antd";
 import Cookies from "js-cookie";
 import { Context } from "../../../context/Context";
 import axios from "axios";
-import { storage } from "../../../firebase";
 
 const CheckboxGroup = Checkbox.Group;
 const plainOptions = ["Wifi", "Nóng lạnh", "Điều hòa"];
@@ -36,41 +35,6 @@ const { Dragger } = Upload;
 
 function AddNew() {
   const [checkedList, setCheckedList] = useState();
-  const [location, setLocation] = useState({
-    center: {
-      lat: 25,
-      lng: 105,
-    },
-    zoom: 18,
-    address: ".",
-  });
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    locationX: "",
-    locationY: "",
-    address: "",
-    gara: "",
-    type: "",
-    area: "",
-    price: "",
-    bedrooms: "",
-    bathrooms: "",
-    feature: "",
-    phone: "",
-  });
-
-  const handleChangeLocation = useCallback(() => {
-    setLocation({
-      center: {
-        lat: parseFloat(formData.locationX) || 0,
-        lng: parseFloat(formData.locationY) || 0,
-      },
-      zoom: 14,
-      address: formData.address || ".",
-    });
-  }, [formData.address, formData.locationX, formData.locationY]);
-
   const checkAll = plainOptions?.length === checkedList?.length;
   const indeterminate =
     checkedList?.length > 0 && checkedList?.length < plainOptions?.length;
@@ -82,15 +46,27 @@ function AddNew() {
     setCheckedList(e.target.checked ? plainOptions : []);
   };
 
-  const { user, dispatch } = useContext(Context);
+  const [location, setLocation] = useState({
+    center: {
+      lat: 25,
+      lng: 105,
+    },
+    zoom: 18,
+    address: ".",
+  });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
+  // const handleChangeLocation = useCallback(() => {
+  //   setLocation({
+  //     center: {
+  //       lat: parseFloat(locationX) || 0,
+  //       lng: parseFloat(locationY) || 0,
+  //     },
+  //     zoom: 14,
+  //     address: address || ".",
+  //   });
+  // }, [address, locationX, locationY]);
+
+  const { user, dispatch } = useContext(Context);
 
   const props = {
     name: "file",
@@ -100,49 +76,56 @@ function AddNew() {
 
       if (status === "done") {
         const file = info.file.originFileObj;
-
-        // Upload the file to Firebase Storage
-        const storageRef = storage.ref();
-        const fileRef = storageRef.child(`images/${file.name}`);
-
-        fileRef.put(file).then((snapshot) => {
-          console.log("File uploaded successfully:", snapshot);
-
-          // Get the download URL for the file
-          snapshot.ref.getDownloadURL().then((downloadURL) => {
-            console.log("File download URL:", downloadURL);
-
-            // Now you can save the downloadURL in your state or use it as needed
-          });
-        });
       } else if (status === "error") {
         console.error("Error uploading file:", info.file.error);
       }
     },
-    onDrop(e) {},
-    // ... (other props)
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
+  };
+  const [title, setTitle] = useState();
+  const [gara, setGara] = useState();
+  const [bedrooms, setBedrooms] = useState();
+  const [bathrooms, setBathrooms] = useState();
+  const [phone, setPhone] = useState();
+  const [address, setAddress] = useState();
+  const [locationX, setLocationX] = useState();
+  const [locationY, setLocationY] = useState();
+  const [description, setDescription] = useState();
+  const [price, setPrice] = useState();
+  const [area, setArea] = useState();
+  const [type, setType] = useState("Phòng trọ");
+  const handleTypeChange = (value) => {
+    setType(value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newPost = {
       owner: user.lastName,
-      ...formData,
+      title,
+      gara,
+      bedrooms,
+      bathrooms,
+      phone,
+      address,
+      locationX,
+      locationY,
+      description,
+      price,
+      area,
+      type,
       feature: checkedList,
     };
-    handleChangeLocation();
     try {
-      // console.log(newPost);
+      console.log(newPost);
       const res = await axios.post("/post/create", newPost);
 
-      // console.log(res);
-      window.location.replace("/post/get/" + res._id);
+      console.log(res);
+      window.location.replace("/post/get/" + res.data.post._id);
     } catch (err) {}
   };
-
-  useEffect(() => {
-    handleChangeLocation();
-  }, [handleChangeLocation]);
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -190,12 +173,12 @@ function AddNew() {
                       className="p-4 text-blue-500"
                     />
                     <Input
-                      value={formData.address}
                       name="address"
-                      onChange={handleChange}
                       type="text"
                       className="input-style"
                       placeholder="Địa Chỉ của bạn"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
                     ></Input>
                   </ul>
                 </div>
@@ -212,9 +195,9 @@ function AddNew() {
                       type="text"
                       className="input-style"
                       placeholder="Kinh độ trên Map"
-                      value={formData.locationX}
                       name="locationX"
-                      onChange={handleChange}
+                      value={locationX}
+                      onChange={(e) => setLocationX(e.target.value)}
                     ></Input>
                   </ul>
                 </div>
@@ -232,9 +215,9 @@ function AddNew() {
                       // onChange={(e) => conChangeViDo(e)}
                       className="input-style"
                       placeholder="Vĩ độ trên Map "
-                      value={formData.locationY}
                       name="locationY"
-                      onChange={handleChange}
+                      value={locationY}
+                      onChange={(e) => setLocationY(e.target.value)}
                     ></Input>
                   </ul>
                 </div>
@@ -257,9 +240,9 @@ function AddNew() {
                       type="text"
                       className="input-style"
                       placeholder="Giá cho thuê"
-                      value={formData.price}
                       name="price"
-                      onChange={handleChange}
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
                     ></Input>
                   </ul>
                 </div>
@@ -276,9 +259,9 @@ function AddNew() {
                       type="text"
                       className="input-style"
                       placeholder="Số điện thoại của bạn"
-                      value={formData.phone}
                       name="phone"
-                      onChange={handleChange}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                     ></Input>
                   </ul>
                 </div>
@@ -321,9 +304,9 @@ function AddNew() {
                         type="text "
                         className="input-style"
                         placeholder="Nhập từ khóa"
-                        value={formData.title}
                         name="title"
-                        onChange={handleChange}
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                       ></Input>
                     </ul>
                   </div>
@@ -357,9 +340,9 @@ function AddNew() {
                             type="text "
                             className="input-style"
                             placeholder="Diện tích"
-                            value={formData.area}
-                            onChange={handleChange}
                             name="area"
+                            value={area}
+                            onChange={(e) => setArea(e.target.value)}
                           ></Input>
                         </ul>
                       </div>
@@ -367,7 +350,7 @@ function AddNew() {
                       <div className=" ">
                         <h5 className="pb-2">Phân loại</h5>
                         <Select
-                          defaultValue="Chung cư"
+                          defaultValue="Phòng trọ"
                           style={{
                             width: 213,
                           }}
@@ -390,10 +373,8 @@ function AddNew() {
                             },
                           ]}
                           name="type"
-                          value={formData.type}
-                          onChange={(value) =>
-                            handleChange({ target: { name: "type", value } })
-                          }
+                          value={type}
+                          onChange={handleTypeChange}
                         />
                       </div>
                     </div>
@@ -412,9 +393,9 @@ function AddNew() {
                             type="text "
                             className="input-style"
                             placeholder="Số phòng ngủ"
-                            value={formData.bedrooms}
                             name="bedrooms"
-                            onChange={handleChange}
+                            value={bedrooms}
+                            onChange={(e) => setBedrooms(e.target.value)}
                           ></Input>
                         </ul>
                       </div>
@@ -430,9 +411,9 @@ function AddNew() {
                             type="text "
                             className="input-style"
                             placeholder="   Số phòng tắm"
-                            value={formData.bathrooms}
-                            onChange={handleChange}
                             name="bathrooms"
+                            value={bathrooms}
+                            onChange={(e) => setBathrooms(e.target.value)}
                           ></Input>
                         </ul>
                       </div>
@@ -448,9 +429,9 @@ function AddNew() {
                             type="text "
                             className="input-style"
                             placeholder="Chỗ để xe"
-                            value={formData.gara}
                             name="gara"
-                            onChange={handleChange}
+                            value={gara}
+                            onChange={(e) => setGara(e.target.value)}
                           ></Input>
                         </ul>
                       </div>
@@ -495,9 +476,9 @@ function AddNew() {
                         type="text "
                         className="input-text"
                         placeholder="Mô tả của bạn"
-                        value={formData.description}
-                        onChange={handleChange}
                         name="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                       ></Input>
                     </ul>
                   </div>
