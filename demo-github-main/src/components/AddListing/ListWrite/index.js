@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Col, Row, Card } from "antd";
-import { Rate } from "antd";
+import { Col, Row } from "antd";
 import {
   faPowerOff,
   faMagnifyingGlass,
@@ -9,16 +8,34 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./listwrite.css";
 import Cookies from "js-cookie";
 import { Context } from "../../../context/Context";
-
-const custom1 = require("../../../asset/img/custom/custom1.jpg");
-const product = require("../../../asset/img/Product/Forsale.jpg");
+import ItemProduct from "../../../Pages/Item-product";
+import axios from "axios";
 
 export default function ListWrite() {
   const { user, dispatch } = useContext(Context);
+  const [posts, setPosts] = useState([]);
+  const { search } = useLocation();
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const res = await axios.get("/post/getPost" + search);
+      const sortedPosts = res.data.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      const filteredPosts = sortedPosts.filter((post) => {
+        return post.owner === user.lastName;
+      });
+
+      setPosts(filteredPosts);
+    };
+    fetchPosts();
+  }, [search, user.lastName]);
+
   const handleLogout = () => {
     Cookies.remove("token");
     localStorage.removeItem("user");
@@ -31,7 +48,7 @@ export default function ListWrite() {
           <div className="header-container">
             <h3 className="font-semibold text-xl">DANH SÁCH BÀI VIẾT</h3>
             <div className="header-container-right">
-              <img src={custom1} className="w-10 h-10 rounded-full ml-2 "></img>
+              {/* <img src={custom1} className="w-10 h-10 rounded-full ml-2 "></img> */}
               <strong className="ml-2 mr-2">
                 Xin Chào, <span className="text-blue-500">{user.lastName}</span>
               </strong>
@@ -62,78 +79,23 @@ export default function ListWrite() {
             </div>
             <div>
               <div className="list-items pt-10">
-                <Row gutter={16}>
-                  <Col className="gutter-row" span={12}>
-                    <div className="new-item flex">
-                      <div className="new-item-img">
-                        <img src={product} alt="" className="item-img"></img>
-                      </div>
-                      <Card bordered={false}>
-                        <div className="new-item-content">
-                          <h4 className="font-semibold text-xl">
-                            Gorgeous House For Sale
-                          </h4>
-                          <div>
-                            <FontAwesomeIcon
-                              icon={faLocationDot}
-                              className="text-blue-500"
-                            />
-                            <span className="font-semibold ml-2">
-                              70 Bright St New York, USA
-                            </span>
-                          </div>
-                          <div className="rate">
-                            <Rate
-                              disabled
-                              allowHalf
-                              defaultValue={3.5}
-                              className="text-sm"
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashCan}
-                              className="icon-delete text-blue-500"
-                            />
-                          </div>
-                        </div>
-                      </Card>
+                <div>
+                  <div className="product">
+                    <div className="product-content-apartment">
+                      <Row gutter={16}>
+                        {posts.map((p) => (
+                          <Col
+                            span={10}
+                            key={p.id}
+                            style={{ marginBottom: 16 }}
+                          >
+                            <ItemProduct post={p} />
+                          </Col>
+                        ))}
+                      </Row>
                     </div>
-                  </Col>
-                  <Col className="gutter-row" span={12}>
-                    <div className="new-item flex">
-                      <div className="new-item-img">
-                        <img src={product} alt="" className="item-img"></img>
-                      </div>
-                      <Card bordered={false}>
-                        <div className="new-item-content">
-                          <h4 className="font-semibold text-xl">
-                            Gorgeous House For Sale
-                          </h4>
-                          <div>
-                            <FontAwesomeIcon
-                              icon={faLocationDot}
-                              className="text-blue-500"
-                            />
-                            <span className="font-semibold ml-2">
-                              70 Bright St New York, USA
-                            </span>
-                          </div>
-                          <div className="rate">
-                            <Rate
-                              disabled
-                              allowHalf
-                              defaultValue={3.5}
-                              className="text-sm"
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashCan}
-                              className="icon-delete text-blue-500"
-                            />
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-                  </Col>
-                </Row>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

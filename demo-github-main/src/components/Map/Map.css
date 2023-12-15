@@ -18,10 +18,18 @@
 }
 
 .pin-icon {
-  font-size: 3rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 100%;
+  user-select: none;
+  transform: translate(-50%, -50%);
 }
 
 .pin-text {
-  font-size: 1.3em;
+  font-size: 1.5em;
   color: red;
+  padding: 5px;
 }

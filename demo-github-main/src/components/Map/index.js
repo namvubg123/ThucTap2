@@ -24,6 +24,7 @@ function MapLocation(post) {
           }}
           center={post?.location?.center}
           defaultZoom={post?.location?.zoom}
+          yesIWantToUseGoogleMapApiInternals
         >
           <LocationPin
             lat={post.location.center?.lat}

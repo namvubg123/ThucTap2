@@ -27,10 +27,13 @@ export default function ItemProduct({ post }) {
           <div className="listing-item">
             <article className="fl-wrap">
               <div className="geodir-img relative">
-                <div className="">
+                <div>
                   <a href="#">
-                    <img src={post.images[0]} alt="Product" />
-                    <div className=""></div>
+                    <img
+                      className="image-container"
+                      src={post.images[0]}
+                      alt="Product"
+                    />
                   </a>
                 </div>
                 <div className="absolute top-0 w-full h-full">
@@ -42,14 +45,17 @@ export default function ItemProduct({ post }) {
                     <Col span={20}>
                       <div className="contact-product">
                         <ul className=" flex ">
-                          <li>
+                          {/* <li>
                             <a href="#" className="cat-otp">
-                              For Rent
+                              Cho thuê
                             </a>
-                          </li>
+                          </li> */}
                           <li>
                             <a href="#" className="cat-otp ml-3">
-                              {post.type}
+                              {post.type === "NhaTro" && "Nhà Trọ"}
+                              {post.type === "NhaNguyenCan" && "Nhà nguyên căn"}
+                              {post.type === "CanHo" && "Căn Hộ"}
+                              {post.type === "OGhep" && "Ở Ghép"}
                             </a>
                           </li>
                         </ul>

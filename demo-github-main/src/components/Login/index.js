@@ -44,12 +44,12 @@ export default function Login() {
       <form onSubmit={onFinish}>
         <div className="user-box">
           <label className="title">
-            UserName
+            Tài khoản
             <span style={{ color: "red" }}> *</span>
           </label>
           <Input
             className="input"
-            placeholder="Your Username"
+            placeholder="Tài khoản"
             prefix={<FontAwesomeIcon icon={faUser} />}
             value={username}
             onChange={(e) => setUserName(e.target.value)}
@@ -57,12 +57,12 @@ export default function Login() {
         </div>
         <div className="user-box">
           <label className="title">
-            Password
+            Mật khẩu
             <span style={{ color: "red" }}> *</span>
           </label>
           <Input.Password
             className="input"
-            placeholder="Input password"
+            placeholder="Mật khẩu"
             prefix={<FontAwesomeIcon icon={faLock} />}
             value={password}
             onChange={(e) => setPassword(e.target.value)}

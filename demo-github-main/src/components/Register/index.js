@@ -38,12 +38,12 @@ function Register() {
       <form onSubmit={handleRegister}>
         <div className="user-box">
           <label className="title">
-            Full Name
+            Tên của bạn
             <span style={{ color: "red" }}> *</span>
           </label>
           <Input
             className="input"
-            placeholder="Your Name"
+            placeholder="Tên của bạn"
             prefix={<FontAwesomeIcon icon={faUser} />}
             onChange={(e) => setLastname(e.target.value)}
             value={lastName}
@@ -51,12 +51,12 @@ function Register() {
         </div>
         <div className="user-box">
           <label className="title">
-            User Name
+            Tài khoản
             <span style={{ color: "red" }}> *</span>
           </label>
           <Input
             className="input"
-            placeholder="Your User Name "
+            placeholder="Tài khoản "
             prefix={<FontAwesomeIcon icon={faEnvelope} />}
             onChange={(e) => setUsername(e.target.value)}
             value={username}
@@ -64,12 +64,12 @@ function Register() {
         </div>
         <div className="user-box">
           <label className="title">
-            Password
+            Mật khẩu
             <span style={{ color: "red" }}> *</span>
           </label>
           <Input.Password
             className="input"
-            placeholder="input password"
+            placeholder="Mật khẩu"
             prefix={<FontAwesomeIcon icon={faLock} />}
             onChange={(e) => setPassword(e.target.value)}
             value={password}

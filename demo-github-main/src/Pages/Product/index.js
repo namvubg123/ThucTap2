@@ -10,7 +10,7 @@ export default function Product({ posts }) {
       <div className="product-content">
         <div className="flex py-12 justify-between">
           <div className="col-md-4 mt-2">
-            <h2 className="text-sm font-bold">TIN NỔi BẬT</h2>
+            <h2 className="text-sm font-bold">TIN NỔI BẬT</h2>
           </div>
           <div className="col-md-8 ">
             <div className="flex justify-end w-full text-xs font-normal">

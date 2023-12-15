@@ -14,8 +14,10 @@ export default function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       const res = await axios.get("/post/getPost" + search);
-      setPosts(res.data);
-      //   console.log(res.data);
+      const sortedPosts = res.data.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      setPosts(sortedPosts);
     };
     fetchPosts();
   }, [search]);
@@ -41,7 +43,7 @@ export default function Home() {
               <input className="p-5 px-8 text-xs border" placeholder="chosse" />
             </form>
             <button className="btn-search-home">
-              search
+              Search
               <SearchOutlined className="btn-search-i" />
             </button>
           </div>

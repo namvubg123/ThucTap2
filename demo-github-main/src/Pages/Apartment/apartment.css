@@ -1,0 +1,22 @@
+.product {
+  padding-bottom: 10px;
+  background-color: #f5f7fb;
+}
+
+.product-content-apartment {
+  width: 1204px;
+  margin: 0 auto;
+  padding-top: 50px;
+}
+.button-small:hover {
+  color: #fff;
+  background-color: #3270fc;
+}
+.button-small:focus {
+  color: #fff;
+  background-color: #3270fc;
+}
+
+.button-small:active {
+  background-color: #3270fc;
+}

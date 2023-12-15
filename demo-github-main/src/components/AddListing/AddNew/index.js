@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Col, Row, Upload, Input } from "antd";
+import { Col, Row, Upload, Input, message } from "antd";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import {
   faStreetView,
@@ -27,6 +27,9 @@ import { Select, Checkbox, Divider } from "antd";
 import Cookies from "js-cookie";
 import { Context } from "../../../context/Context";
 import axios from "axios";
+
+import { storage, db } from "../../../firebase";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 const CheckboxGroup = Checkbox.Group;
 const plainOptions = ["Wifi", "Nóng lạnh", "Điều hòa"];
@@ -55,35 +58,8 @@ function AddNew() {
     address: ".",
   });
 
-  // const handleChangeLocation = useCallback(() => {
-  //   setLocation({
-  //     center: {
-  //       lat: parseFloat(locationX) || 0,
-  //       lng: parseFloat(locationY) || 0,
-  //     },
-  //     zoom: 14,
-  //     address: address || ".",
-  //   });
-  // }, [address, locationX, locationY]);
-
   const { user, dispatch } = useContext(Context);
 
-  const props = {
-    name: "file",
-    multiple: true,
-    onChange(info) {
-      const { status } = info.file;
-
-      if (status === "done") {
-        const file = info.file.originFileObj;
-      } else if (status === "error") {
-        console.error("Error uploading file:", info.file.error);
-      }
-    },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
-    },
-  };
   const [title, setTitle] = useState();
   const [gara, setGara] = useState();
   const [bedrooms, setBedrooms] = useState();
@@ -95,6 +71,7 @@ function AddNew() {
   const [description, setDescription] = useState();
   const [price, setPrice] = useState();
   const [area, setArea] = useState();
+  const [images, setImages] = useState([]);
   const [type, setType] = useState("Phòng trọ");
   const handleTypeChange = (value) => {
     setType(value);
@@ -102,29 +79,83 @@ function AddNew() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newPost = {
-      owner: user.lastName,
-      title,
-      gara,
-      bedrooms,
-      bathrooms,
-      phone,
-      address,
-      locationX,
-      locationY,
-      description,
-      price,
-      area,
-      type,
-      feature: checkedList,
-    };
     try {
-      console.log(newPost);
-      const res = await axios.post("/post/create", newPost);
+      const uploadPromises = images.map((image) => {
+        return new Promise((resolve, reject) => {
+          const storageRef = ref(storage, image.name);
+          const uploadTask = uploadBytesResumable(storageRef, image);
 
-      console.log(res);
-      window.location.replace("/post/get/" + res.data.post._id);
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const progress =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log(`Upload progress: ${progress}%`);
+            },
+            (error) => {
+              console.error("Upload error:", error);
+              reject(error);
+            },
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref)
+                .then((downloadURL) => {
+                  resolve(downloadURL);
+                })
+                .catch((error) => {
+                  console.error("Error getting download URL:", error);
+                  reject(error);
+                });
+            }
+          );
+        });
+      });
+
+      const downloadURLs = await Promise.all(uploadPromises);
+      const newPost = {
+        owner: user.lastName,
+        title,
+        gara,
+        bedrooms,
+        bathrooms,
+        phone,
+        address,
+        locationX,
+        locationY,
+        description,
+        price,
+        area,
+        type,
+        images: downloadURLs,
+        feature: checkedList,
+      };
+      const res = await axios.post("/post/create", newPost);
+      // console.log(res);
     } catch (err) {}
+  };
+
+  const handleChangeLocation = useCallback(() => {
+    setLocation({
+      center: {
+        lat: parseFloat(locationX) || 21.008306692839064,
+        lng: parseFloat(locationY) || 105.9383073064679,
+      },
+      zoom: 14,
+      address: address || ".",
+    });
+  }, [address, locationX, locationY]);
+
+  useEffect(() => {
+    handleChangeLocation();
+  }, [handleChangeLocation]);
+
+  const props = {
+    name: "file",
+    multiple: true,
+    action: "",
+    customRequest: ({ file, onSuccess, onError }) => {
+      setImages((prevImages) => [...prevImages, file]);
+      onSuccess();
+    },
   };
 
   const handleLogout = () => {
@@ -140,7 +171,6 @@ function AddNew() {
           <div className="header-container">
             <h3 className="font-semibold text-xl">ĐĂNG BÀI</h3>
             <div className="header-container-right">
-              <img src={custom1} className="w-10 h-10 rounded-full ml-2 "></img>
               <strong className="ml-2 mr-2">
                 Xin Chào, <span className="text-blue-500">{user.lastName}</span>
               </strong>
@@ -226,6 +256,7 @@ function AddNew() {
           </div>
 
           {<MapLocation location={location} zoomLevel={18} />}
+
           <div className="custom-form">
             <Row gutter={16} className="mt-8">
               <Col className="gutter-row text-xs" span={8}>
@@ -356,19 +387,19 @@ function AddNew() {
                           }}
                           options={[
                             {
-                              value: "Chung cư",
-                              label: "Chung cư",
+                              value: "CanHo",
+                              label: "Căn hộ",
                             },
                             {
-                              value: "Phòng trọ",
+                              value: "NhaTro",
                               label: "Phòng trọ",
                             },
                             {
-                              value: "Nhà nguyên căn",
+                              value: "NhaNguyenCan",
                               label: "Nhà nguyên căn",
                             },
                             {
-                              value: "Ở ghép",
+                              value: "OGhep",
                               label: "Ở ghép",
                             },
                           ]}

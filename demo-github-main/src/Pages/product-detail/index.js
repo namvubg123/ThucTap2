@@ -23,6 +23,7 @@ import "./ProductDetail.css";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
+const avatar = require("../../asset/img/Profile/Avatar.jpg");
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -34,7 +35,7 @@ export default function ProductDetail() {
       try {
         const res = await axios.get("/post/get/" + id);
         setPost(res.data);
-        console.log(res.data);
+        // console.log(res.data);
         setLocation({
           center: {
             lat: Number.parseFloat(res.data?.locationX),
@@ -142,7 +143,12 @@ export default function ProductDetail() {
                       <div className="item-properties">
                         <FontAwesomeIcon className="icon-pro" icon={faHome} />
                         <h4 className="title-item-pro">Loại</h4>
-                        <span className="des-item-pro">{post.type}</span>
+                        <span className="des-item-pro">
+                          {post.type === "NhaTro" && "Nhà Trọ"}
+                          {post.type === "NhaNguyenCan" && "Nhà nguyên căn"}
+                          {post.type === "CanHo" && "Căn Hộ"}
+                          {post.type === "OGhep" && "Ở Ghép"}
+                        </span>
                       </div>
                     </Col>
                     <Col className="gutter-row" span={6}>
@@ -155,14 +161,14 @@ export default function ProductDetail() {
                     <Col className="gutter-row" span={6}>
                       <div className="item-properties">
                         <FontAwesomeIcon className="icon-pro" icon={faBed} />
-                        <h4 className="title-item-pro">Bedrooms</h4>
+                        <h4 className="title-item-pro">Phòng ngủ</h4>
                         <span className="des-item-pro">{post.bedrooms}</span>
                       </div>
                     </Col>
                     <Col className="gutter-row" span={6}>
                       <div className="item-properties">
                         <FontAwesomeIcon className="icon-pro" icon={faBath} />
-                        <h4 className="title-item-pro">Bathrooms</h4>
+                        <h4 className="title-item-pro">Phòng tắm</h4>
                         <span className="des-item-pro">{post.bathrooms}</span>
                       </div>
                     </Col>
@@ -226,7 +232,12 @@ export default function ProductDetail() {
                         </span>
                         <span className="detail-item-type">
                           Loại:
-                          <strong>{post.type}</strong>
+                          <strong>
+                            {post.type === "NhaTro" && "Nhà Trọ"}
+                            {post.type === "NhaNguyenCan" && "Nhà nguyên căn"}
+                            {post.type === "CanHo" && "Căn Hộ"}
+                            {post.type === "OGhep" && "Ở Ghép"}
+                          </strong>
                         </span>
                       </div>
                     </Col>
@@ -241,7 +252,7 @@ export default function ProductDetail() {
                 <div className="box-widget-header">
                   <div className="profile">
                     <div className="profile-img">
-                      <img src="https://homeradar.kwst.net/images/all/1.jpg" />
+                      <img alt="Avatar" src={avatar} />
                     </div>
                     <div className="profile-info">
                       <Link to={`/?user=${post.owner}`} className="link">

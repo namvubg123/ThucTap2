@@ -68,7 +68,7 @@ export default function Profile() {
           <div className="header-container">
             <h3 className="font-semibold text-xl">THÔNG TIN CÁ NHÂN</h3>
             <div className="header-container-right">
-              <img src={custom1} className="w-10 h-10 rounded-full ml-2 "></img>
+              {/* <img src={custom1} className="w-10 h-10 rounded-full ml-2 "></img> */}
               <strong className="ml-2 mr-2">
                 Xin Chào, <span className="text-blue-500">{user.lastName}</span>
               </strong>
@@ -84,7 +84,7 @@ export default function Profile() {
         </div>
         <div className="form-profile">
           <Row gutter={16}>
-            <Col className=" gutter-row custom-form-avt" span={11}>
+            {/* <Col className=" gutter-row custom-form-avt" span={11}>
               <div className="widget-header-profile">
                 <FontAwesomeIcon
                   icon={faCircleUser}
@@ -109,7 +109,7 @@ export default function Profile() {
                   </Upload>
                 </div>
               </div>
-            </Col>
+            </Col> */}
             <Col className="gutter-row" span={1}></Col>
             <Col className="gutter-row custom-form-profile text-xs" span={12}>
               <div className="widget-header-profile">
