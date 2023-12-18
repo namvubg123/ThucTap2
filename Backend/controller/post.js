@@ -86,9 +86,13 @@ const postController = {
   updatePost: async (req, res) => {
     try {
       const postId = req.params.id;
-      const updatedPost = await Post.findByIdAndUpdate(postId, req.body, {
-        new: true,
-      });
+      const updatedPost = await Post.findByIdAndUpdate(
+        postId,
+        { $set: req.body },
+        {
+          new: true,
+        }
+      );
 
       if (!updatedPost) {
         return res.status(404).json({ error: "Post not found" });
@@ -103,7 +107,7 @@ const postController = {
 
   deletePost: async (req, res) => {
     try {
-      const postId = req.params.id;
+      const postId = req.params._id;
       const deletedPost = await Post.findByIdAndDelete(postId);
 
       if (!deletedPost) {

@@ -53,3 +53,25 @@
 .icon-delete {
   margin-top: 5px;
 }
+.status-icon {
+  display: flex;
+  align-items: center;
+}
+
+.status-pending {
+  color: orange;
+  margin-right: 5px;
+  margin-bottom: 60px;
+}
+
+.status-accepted {
+  color: limegreen;
+  margin-right: 5px;
+  margin-bottom: 60px;
+}
+
+.status-rejected {
+  color: red;
+  margin-right: 5px;
+  margin-bottom: 60px;
+}

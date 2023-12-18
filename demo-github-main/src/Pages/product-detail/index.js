@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -23,9 +23,11 @@ import "./ProductDetail.css";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
+import { Context } from "../../context/Context";
 const avatar = require("../../asset/img/Profile/Avatar.jpg");
 
 export default function ProductDetail() {
+  const { user } = useContext(Context);
   const { id } = useParams();
   const [post, setPost] = useState({});
   const [location, setLocation] = useState({});
@@ -190,8 +192,8 @@ export default function ProductDetail() {
                           </strong>
                         </span>
                         <span className="detail-item-type">
-                          Số người ở:
-                          <strong>6</strong>
+                          Liên hệ:
+                          <strong>0{post.phone}</strong>
                         </span>
                         <span className="detail-item-type">
                           Tình trạng:
@@ -273,10 +275,10 @@ export default function ProductDetail() {
                       <div className="contats-item">
                         <span className="contats-item-name">
                           <PhoneTwoTone className="contats-icon" />
-                          Phone:
+                          Số điện thoại:
                         </span>
                         <span className="contats-item-content">
-                          +7(123)987654
+                          +84 {post.phone}
                         </span>
                       </div>
                       <div className="contats-item">
@@ -285,7 +287,7 @@ export default function ProductDetail() {
                           Email:
                         </span>
                         <span className="contats-item-content">
-                          JessieWilcox@domain.com
+                          {user.email}
                         </span>
                       </div>
                       <div className="contats-item">
@@ -299,9 +301,7 @@ export default function ProductDetail() {
                       </div>
                     </div>
                   </div>
-
                   <div className="profile-widget-footer">
-                    <button className="btn-view-profile">View Profile</button>
                     <FontAwesomeIcon
                       className="widget-footer-send"
                       icon={faPaperPlane}

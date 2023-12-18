@@ -12,8 +12,8 @@ export const createProduct = (product) => {
   return axios.post(`/post/create`, product);
 };
 
-export const updateProduct = (productId) => {
-  return axios.put(`/post/update/${productId}`);
+export const updateProduct = (productId, status) => {
+  return axios.put(`/post/update/${productId}`, status);
 };
 
 export const removeProduct = (id) => {

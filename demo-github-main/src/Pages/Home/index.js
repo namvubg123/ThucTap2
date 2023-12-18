@@ -17,7 +17,21 @@ export default function Home() {
       const sortedPosts = res.data.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
-      setPosts(sortedPosts);
+
+      const currentDate = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(currentDate.getDate() - 30);
+
+      const filteredPosts = sortedPosts.filter((post) => {
+        const postCreatedAt = new Date(post.createdAt);
+        return (
+          postCreatedAt >= thirtyDaysAgo &&
+          postCreatedAt <= currentDate &&
+          post.status === "accepted"
+        );
+      });
+
+      setPosts(filteredPosts);
     };
     fetchPosts();
   }, [search]);
@@ -27,27 +41,30 @@ export default function Home() {
       <div className="content-home">
         <div className="overlay1"></div>
         <div className="content-banner">
-          <p className="text-home">Real Estate Searching Platform</p>
+          <p className="text-home"></p>
           <h2>Tìm kiếm một ngôi nhà bạn mơ ước</h2>
 
           <div className="flex mt-6">
             <form>
               <input
                 className="p-5 px-8 text-xs rounded-l-md border border-r-0"
-                placeholder="chosse"
+                placeholder="Phân loại"
               />
               <input
                 className="p-5 px-8 text-xs border border-r-0"
-                placeholder="chosse"
+                placeholder="Giá tiền"
               />
-              <input className="p-5 px-8 text-xs border" placeholder="chosse" />
+              <input
+                className="p-5 px-8 text-xs border"
+                placeholder="Khu vực"
+              />
             </form>
             <button className="btn-search-home">
               Search
               <SearchOutlined className="btn-search-i" />
             </button>
           </div>
-          <p className="text-home">Need more search options</p>
+          <p className="text-home"></p>
         </div>
       </div>
       <div className="fw-bread">

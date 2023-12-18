@@ -8,6 +8,7 @@ import AdminUsers from "./../admin/page/Users/index";
 import DefaultLayoutAdmin from "../admin/components/DefaultLayoutAdmin";
 import { Context } from "../context/Context";
 import Apartment from "../Pages/Apartment";
+// import Pay from "./../Pages/Pay/index";
 
 function RoutersConfig() {
   const { user } = useContext(Context);
@@ -21,6 +22,7 @@ function RoutersConfig() {
       <Route path="nhatro" element={<Apartment />} />
       <Route path="nhanguyencan" element={<Apartment />} />
       <Route path="oghep" element={<Apartment />} />
+      {/* <Route path="pay" element={<Pay />} /> */}
       <Route path="/admin" element={<DefaultLayoutAdmin />}>
         <Route path="users" element={<AdminUsers />} />
         <Route path="products" element={<AdminProducts />} />

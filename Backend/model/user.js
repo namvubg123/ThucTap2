@@ -36,9 +36,6 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
     },
-    balance: {
-      type: Number,
-    },
   },
   { timestamps: true }
 );

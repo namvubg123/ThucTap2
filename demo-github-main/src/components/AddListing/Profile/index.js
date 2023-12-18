@@ -1,60 +1,65 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPowerOff,
-  faCircleUser,
-  faKey,
-} from "@fortawesome/free-solid-svg-icons";
-import { Col, Row, Avatar, Upload, Button } from "antd";
-import { CameraOutlined } from "@ant-design/icons";
+import { faPowerOff, faKey } from "@fortawesome/free-solid-svg-icons";
+import { Col, Row, message } from "antd";
+
 import {
   faUser,
   faPhoneFlip,
   faEnvelope,
-  faWarehouse,
-  faPeopleRoof,
-  faMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import "./profile.css";
 import Cookies from "js-cookie";
 import { Context } from "../../../context/Context";
+import { updateUser } from "./../../../api/users";
 
-const custom1 = require("../../../asset/img/custom/custom1.jpg");
+// const custom1 = require("../../../asset/img/custom/custom1.jpg");
 
-const props = {
-  action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
-  listType: "picture",
-  beforeUpload(file) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const img = document.createElement("img");
-        img.src = reader.result;
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0);
-          ctx.fillStyle = "red";
-          ctx.textBaseline = "middle";
-          ctx.font = "33px Arial";
-          ctx.fillText("Ant Design", 20, 20);
-          canvas.toBlob((result) => resolve(result));
-        };
-      };
-    });
-  },
-};
+// const props = {
+//   action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
+//   listType: "picture",
+//   beforeUpload(file) {
+//     return new Promise((resolve) => {
+//       const reader = new FileReader();
+//       reader.readAsDataURL(file);
+//       reader.onload = () => {
+//         const img = document.createElement("img");
+//         img.src = reader.result;
+//         img.onload = () => {
+//           const canvas = document.createElement("canvas");
+//           canvas.width = img.naturalWidth;
+//           canvas.height = img.naturalHeight;
+//           const ctx = canvas.getContext("2d");
+//           ctx.drawImage(img, 0, 0);
+//           ctx.fillStyle = "red";
+//           ctx.textBaseline = "middle";
+//           ctx.font = "33px Arial";
+//           ctx.fillText("Ant Design", 20, 20);
+//           canvas.toBlob((result) => resolve(result));
+//         };
+//       };
+//     });
+//   },
+// };
 export default function Profile() {
   const { user, dispatch } = useContext(Context);
-  const [profile, setProfile] = useState({
-    lastName: user.lastName || null,
-    email: user.email || null,
-    phone: user.phone || null,
-  });
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+
+  const handleUpdate = async () => {
+    message.success(
+      "Thay đổi thông tin thành công, đăng nhập lại để thấy sự thay đổi"
+    );
+    const userInfo = {
+      lastName,
+      phone,
+      email,
+    };
+    const response = await updateUser(user?._id, userInfo);
+    console.log(response);
+  };
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -130,14 +135,8 @@ export default function Profile() {
                     <input
                       type="text "
                       className="input-style"
-                      placeholder=""
-                      value={profile.lastName}
-                      onChange={(e) => {
-                        setProfile((name) => ({
-                          ...name,
-                          lastName: e.target.value,
-                        }));
-                      }}
+                      placeholder={user ? user.lastName : ""}
+                      onClick={(e) => setLastName(e.target.value)}
                     ></input>
                   </ul>
                 </div>
@@ -151,7 +150,8 @@ export default function Profile() {
                     <input
                       type="text "
                       className="input-style"
-                      placeholder="   "
+                      placeholder={user ? user.email : ""}
+                      onChange={(e) => setEmail(e.target.value)}
                     ></input>
                   </ul>
                 </div>
@@ -165,14 +165,15 @@ export default function Profile() {
                     <input
                       type="text "
                       className="input-style"
-                      placeholder="   "
+                      placeholder={user ? user.phone : ""}
+                      onChange={(e) => setPhone(e.target.value)}
                     ></input>
                   </ul>
                 </div>
               </div>
-              <button className="btn-changes">
-                <Link to="/" className="mt-0 flex items-center">
-                  <span className=" text-sm font-semibold">Save Changes</span>
+              <button className="btn-changes" onClick={handleUpdate}>
+                <Link to="#" className="mt-0 flex items-center">
+                  <span className=" text-sm font-semibold">Cập nhật</span>
                 </Link>
               </button>
             </Col>

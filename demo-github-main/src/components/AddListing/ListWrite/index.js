@@ -4,8 +4,9 @@ import { Col, Row } from "antd";
 import {
   faPowerOff,
   faMagnifyingGlass,
-  faLocationDot,
-  faTrashCan,
+  faCircle,
+  faCheckCircle,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Link, useLocation } from "react-router-dom";
@@ -26,9 +27,17 @@ export default function ListWrite() {
       const sortedPosts = res.data.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
+      const currentDate = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(currentDate.getDate() - 30);
 
       const filteredPosts = sortedPosts.filter((post) => {
-        return post.owner === user.lastName;
+        const postCreatedAt = new Date(post.createdAt);
+        return (
+          postCreatedAt >= thirtyDaysAgo &&
+          postCreatedAt <= currentDate &&
+          post.owner === user.lastName
+        );
       });
 
       setPosts(filteredPosts);
@@ -90,6 +99,35 @@ export default function ListWrite() {
                             style={{ marginBottom: 16 }}
                           >
                             <ItemProduct post={p} />
+                            <div className="status-icon">
+                              {p.status === "pending" && (
+                                <span className="status-pending">
+                                  <FontAwesomeIcon
+                                    icon={faCircle}
+                                    className="pending-icon"
+                                  />
+                                  Chờ duyệt
+                                </span>
+                              )}
+                              {p.status === "accepted" && (
+                                <span className="status-accepted">
+                                  <FontAwesomeIcon
+                                    icon={faCheckCircle}
+                                    className="accepted-icon"
+                                  />
+                                  Đã duyệt
+                                </span>
+                              )}
+                              {p.status === "rejected" && (
+                                <span className="status-rejected">
+                                  <FontAwesomeIcon
+                                    icon={faTimesCircle}
+                                    className="rejected-icon"
+                                  />
+                                  Từ chối
+                                </span>
+                              )}
+                            </div>
                           </Col>
                         ))}
                       </Row>

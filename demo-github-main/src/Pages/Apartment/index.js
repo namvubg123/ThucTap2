@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./apartment.css";
 import Banner from "../../components/banner";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ItemProduct from "../Item-product";
 import { Col, Row } from "antd";
 import { getProducts } from "./../../api/product";
@@ -19,7 +19,21 @@ export default function Apartment() {
     if (newType) {
       getProducts()
         .then((response) => {
-          setPosts(response.data.filter((post) => post.type === newType));
+          const currentDate = new Date();
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(currentDate.getDate() - 30);
+
+          const filteredPosts = response.data.filter((post) => {
+            const postCreatedAt = new Date(post.createdAt);
+            return (
+              postCreatedAt >= thirtyDaysAgo &&
+              postCreatedAt <= currentDate &&
+              post.type === newType &&
+              post.status === "accepted"
+            );
+          });
+
+          setPosts(filteredPosts);
         })
         .catch((error) => {
           console.log(error);

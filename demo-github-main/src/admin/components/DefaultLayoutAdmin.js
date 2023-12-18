@@ -96,7 +96,7 @@ function DefaultLayoutAdmin() {
             }}
             level={2}
           >
-            Quản lý nhà trọ
+            Admin DashBoard
           </Title>
           <Space size={24}>
             <Badge count={10} size="small">

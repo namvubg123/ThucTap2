@@ -29,7 +29,6 @@ export default function Login() {
           } else {
             sessionStorage.setItem("User", JSON.stringify(res.data));
             notification.success({ message: "Đăng nhập thành công" });
-            navigate(`/`);
           }
           dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
         }

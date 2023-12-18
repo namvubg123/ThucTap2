@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Col, Row, Upload, Input, message } from "antd";
+import { Col, Row, Upload, Input, message, Modal } from "antd";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import {
   faStreetView,
@@ -30,6 +30,7 @@ import axios from "axios";
 
 import { storage, db } from "../../../firebase";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import Pay from "../../../Pages/Pay";
 
 const CheckboxGroup = Checkbox.Group;
 const plainOptions = ["Wifi", "Nóng lạnh", "Điều hòa"];
@@ -37,6 +38,14 @@ const custom1 = require("../../../asset/img/custom/custom1.jpg");
 const { Dragger } = Upload;
 
 function AddNew() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const [checkedList, setCheckedList] = useState();
   const checkAll = plainOptions?.length === checkedList?.length;
   const indeterminate =
@@ -519,10 +528,19 @@ function AddNew() {
           </div>
         </div>
         <button className="btn-save" onClick={handleSubmit}>
-          <Link to="/" className="mt-0 flex items-center">
+          <Link onClick={showModal} to="#" className="mt-0 flex items-center">
             <span className=" text-sm font-semibold">Đăng bài</span>
           </Link>
         </button>
+        <Modal
+          title=""
+          open={isModalOpen}
+          footer={null}
+          onCancel={handleCancel}
+          width={700}
+        >
+          <Pay />
+        </Modal>
       </div>
     </div>
   );

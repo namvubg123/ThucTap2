@@ -1,4 +1,6 @@
 import {
+  CheckOutlined,
+  CloseOutlined,
   DeleteOutlined,
   SearchOutlined,
   UserAddOutlined,
@@ -16,7 +18,11 @@ import Title from "antd/es/typography/Title";
 import React, { useEffect, useState } from "react";
 import ModalProduct from "./components/ModalProduct";
 
-import { getProducts, removeProduct } from "../../../api/product";
+import {
+  getProducts,
+  removeProduct,
+  updateProduct,
+} from "../../../api/product";
 import dayjs from "dayjs";
 
 function AdminProducts(props) {
@@ -28,13 +34,64 @@ function AdminProducts(props) {
   useEffect(() => {
     getProducts()
       .then((response) => {
-        // console.log(response);
-        setDataSource(response.data);
+        const sortedData = response.data.sort((a, b) => {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        setDataSource(sortedData);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+
+  const handleConfirmChangeStatus = (record, newStatus) => {
+    const updatedData = { status: newStatus };
+    updateProduct(record._id, updatedData)
+      .then((response) => {
+        console.log("Cập nhật trạng thái thành công:", response.data);
+        getProducts()
+          .then((response) => {
+            const sortedData = response.data.sort((a, b) => {
+              return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+            setDataSource(sortedData);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((error) => {
+        console.log("Lỗi khi cập nhật trạng thái:", error);
+      });
+  };
+
+  const renderOptions = (record) => (
+    <Space size={10}>
+      {record.status === "pending" && (
+        <Tooltip title="Duyệt">
+          <Button
+            icon={<CheckOutlined />}
+            onClick={() => handleConfirmChangeStatus(record, "accepted")}
+          />
+        </Tooltip>
+      )}
+      {record.status === "pending" && (
+        <Tooltip title="Từ chối">
+          <Button
+            icon={<CloseOutlined />}
+            onClick={() => handleConfirmChangeStatus(record, "rejected")}
+          />
+        </Tooltip>
+      )}
+      <Tooltip title="Xóa">
+        <Button
+          icon={<DeleteOutlined />}
+          onClick={() => handleConfirmDeleteProduct(record._id)}
+        />
+      </Tooltip>
+    </Space>
+  );
 
   const columns = [
     {
@@ -52,11 +109,34 @@ function AdminProducts(props) {
         </>
       ),
     },
-    // {
-    //   title: "Danh mục",
-    //   align: "center",
-    //   dataIndex: ["category", "name"],
-    // },
+    {
+      title: "Trạng thái",
+      align: "center",
+      render: (text, record) => {
+        let statusLabel = "";
+        let statusColor = "";
+
+        switch (record.status) {
+          case "pending":
+            statusLabel = "Chờ duyệt";
+            statusColor = "black";
+            break;
+          case "accepted":
+            statusLabel = "Đã duyệt";
+            statusColor = "limegreen";
+            break;
+          case "rejected":
+            statusLabel = "Từ chối";
+            statusColor = "red";
+            break;
+          default:
+            statusLabel = "Không xác định";
+            break;
+        }
+
+        return <span style={{ color: statusColor }}>{statusLabel}</span>;
+      },
+    },
     {
       title: "Giá",
       dataIndex: "price",
@@ -64,7 +144,7 @@ function AdminProducts(props) {
     },
     {
       title: "Địa chỉ",
-      dataIndex: "location",
+      dataIndex: "address",
       align: "center",
     },
     {
@@ -87,24 +167,7 @@ function AdminProducts(props) {
     {
       title: "Tùy chọn",
       align: "center",
-      render: (e, record, index) => (
-        <Space size={10} key={index}>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc chắn muốn xóa sản phẩm này ?"
-              icon={<DeleteOutlined />}
-              okText="Xóa"
-              okType="danger"
-              onConfirm={() => handleConfirmDeleteProduct(record._id)}
-            >
-              <Button
-                className="flex justify-center items-center text-md shadow-md"
-                icon={<DeleteOutlined />}
-              ></Button>
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
+      render: (text, record) => renderOptions(record),
     },
   ];
   const handleConfirmDeleteProduct = (id) => {
@@ -114,7 +177,6 @@ function AdminProducts(props) {
       if (res.data.status === true) {
         getProducts()
           .then((response) => {
-            // console.log(response);
             setDataSource(response.data.data);
           })
           .catch((error) => {
