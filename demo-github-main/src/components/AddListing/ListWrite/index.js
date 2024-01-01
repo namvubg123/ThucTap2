@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Col, Row } from "antd";
+import { Col, Row, Select } from "antd";
 import {
   faPowerOff,
   faMagnifyingGlass,
@@ -20,6 +20,8 @@ export default function ListWrite() {
   const { user, dispatch } = useContext(Context);
   const [posts, setPosts] = useState([]);
   const { search } = useLocation();
+  const [filterStatus, setFilterStatus] = useState("");
+  const { Option } = Select;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -27,23 +29,18 @@ export default function ListWrite() {
       const sortedPosts = res.data.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
-      const currentDate = new Date();
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(currentDate.getDate() - 30);
 
       const filteredPosts = sortedPosts.filter((post) => {
-        const postCreatedAt = new Date(post.createdAt);
         return (
-          postCreatedAt >= thirtyDaysAgo &&
-          postCreatedAt <= currentDate &&
-          post.owner === user.lastName
+          post.owner === user.lastName &&
+          (filterStatus === "" || post.status === filterStatus)
         );
       });
 
       setPosts(filteredPosts);
     };
     fetchPosts();
-  }, [search, user.lastName]);
+  }, [search, user.lastName, filterStatus]);
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -73,12 +70,19 @@ export default function ListWrite() {
           <div className="dashboard-opt">
             <div className="dashboard-list-container">
               <div className="header-list">
-                <input
-                  tyle="text"
-                  onclick="this.select()"
-                  placeholder="Search"
-                ></input>
-                <button tyle="submit">
+                <Select
+                  value={filterStatus}
+                  onChange={(value) => setFilterStatus(value)}
+                  placeholder="Lọc theo trạng thái"
+                  style={{ width: 150 }}
+                >
+                  <Option value="">Tất cả</Option>
+                  <Option value="pending">Chờ duyệt</Option>
+                  <Option value="accepted">Đã duyệt</Option>
+                  <Option value="rejected">Từ chối</Option>
+                  <Option value="expired">Hết hạn</Option>
+                </Select>
+                <button type="submit">
                   <FontAwesomeIcon
                     icon={faMagnifyingGlass}
                     className="text-blue-500 ml-5"
@@ -125,6 +129,15 @@ export default function ListWrite() {
                                     className="rejected-icon"
                                   />
                                   Từ chối
+                                </span>
+                              )}
+                              {p.status === "expired" && (
+                                <span className="status-expired">
+                                  <FontAwesomeIcon
+                                    icon={faCircle}
+                                    className="expired-icon"
+                                  />
+                                  Hết hạn
                                 </span>
                               )}
                             </div>

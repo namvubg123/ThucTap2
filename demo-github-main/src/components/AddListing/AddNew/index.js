@@ -31,11 +31,13 @@ import axios from "axios";
 import { storage, db } from "../../../firebase";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import Pay from "../../../Pages/Pay";
+import { getProvinces, getDistricts } from "vietnam-provinces";
 
 const CheckboxGroup = Checkbox.Group;
 const plainOptions = ["Wifi", "Nóng lạnh", "Điều hòa"];
 const custom1 = require("../../../asset/img/custom/custom1.jpg");
 const { Dragger } = Upload;
+const { Option } = Select;
 
 function AddNew() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,9 +83,26 @@ function AddNew() {
   const [price, setPrice] = useState();
   const [area, setArea] = useState();
   const [images, setImages] = useState([]);
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [cityDistricts, setCityDistricts] = useState({});
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
   const [type, setType] = useState("Phòng trọ");
+
   const handleTypeChange = (value) => {
     setType(value);
+  };
+  const handleCityChange = (value) => {
+    setCity(value);
+
+    const filteredDistricts = cityDistricts[value] || [];
+
+    if (!filteredDistricts.some((district) => district.code === district)) {
+      setDistrict("");
+    }
+
+    setDistricts(filteredDistricts);
   };
 
   const handleSubmit = async (e) => {
@@ -134,6 +153,8 @@ function AddNew() {
         price,
         area,
         type,
+        city,
+        district,
         images: downloadURLs,
         feature: checkedList,
       };
@@ -155,6 +176,26 @@ function AddNew() {
 
   useEffect(() => {
     handleChangeLocation();
+    const fetchProvinces = () => {
+      const provinces = getProvinces();
+      setProvinces(provinces);
+    };
+
+    const fetchDistricts = () => {
+      const provinces = getProvinces();
+      setProvinces(provinces);
+
+      const districtsByCity = {};
+      provinces.forEach((province) => {
+        const districts = getDistricts(province.code);
+        districtsByCity[province.name] = districts;
+      });
+
+      setCityDistricts(districtsByCity);
+    };
+
+    fetchProvinces();
+    fetchDistricts();
   }, [handleChangeLocation]);
 
   const props = {
@@ -205,24 +246,74 @@ function AddNew() {
             <Row gutter={16}>
               <Col className="gutter-row text-xs" span={8}>
                 <div>
-                  <h5 className="pb-2 ">Địa chỉ</h5>
+                  <h5 className="pb-2 ">Thành phố </h5>
                   <ul className="input-item ">
                     <FontAwesomeIcon
                       icon={faLocationPin}
                       className="p-4 text-blue-500"
                     />
-                    <Input
-                      name="address"
-                      type="text"
-                      className="input-style"
-                      placeholder="Địa Chỉ của bạn"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                    ></Input>
+                    <Select
+                      className=""
+                      value={city}
+                      onChange={handleCityChange}
+                      bordered={false}
+                    >
+                      <Option value="">Chọn thành phố</Option>
+                      {provinces.map((province) => (
+                        <Option key={province.code} value={province.name}>
+                          {province.name}
+                        </Option>
+                      ))}
+                    </Select>
                   </ul>
                 </div>
               </Col>
               <Col className="gutter-row text-xs" span={8}>
+                <div>
+                  <h5 className="pb-2 ">Huyện/QUận </h5>
+                  <ul className="input-item ">
+                    <FontAwesomeIcon
+                      icon={faLocationPin}
+                      className="p-4 text-blue-500"
+                    />
+                    <Select
+                      className=""
+                      value={district}
+                      onChange={(value) => setDistrict(value)}
+                      bordered={false}
+                    >
+                      <Option value="">Chọn huyện/quận</Option>
+                      {districts.map((district) => (
+                        <Option key={district.code} value={district.name}>
+                          {district.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  </ul>
+                </div>
+              </Col>
+              <Col className="gutter-row text-xs" span={8}>
+                <div>
+                  <h5 className="pb-2 ">Địa chỉ cụ thể </h5>
+                  <ul className="input-item ">
+                    <FontAwesomeIcon
+                      icon={faLocationPin}
+                      className="p-4 text-blue-500"
+                    />
+
+                    <Input
+                      name="address"
+                      type="text"
+                      className="input-style"
+                      placeholder="Địa chỉ cụ thể"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      required
+                    ></Input>
+                  </ul>
+                </div>
+              </Col>
+              <Col className=" gutter-row text-xs" span={8}>
                 <div>
                   <h5 className="pb-2 ">Kinh độ</h5>
                   <ul className="input-item">
@@ -347,6 +438,7 @@ function AddNew() {
                         name="title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        required
                       ></Input>
                     </ul>
                   </div>

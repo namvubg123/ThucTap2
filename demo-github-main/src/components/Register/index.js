@@ -76,9 +76,9 @@ function Register() {
           />
         </div>
         <div className="remember-forgot">
-          <Checkbox>
+          {/* <Checkbox>
             I agree to the Privacy Policy and Terms and Conditions
-          </Checkbox>
+          </Checkbox> */}
         </div>
         <button
           className="btn-login"

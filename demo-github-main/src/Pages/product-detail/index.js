@@ -287,7 +287,7 @@ export default function ProductDetail() {
                           Email:
                         </span>
                         <span className="contats-item-content">
-                          {user.email}
+                          {user?.email}
                         </span>
                       </div>
                       <div className="contats-item">

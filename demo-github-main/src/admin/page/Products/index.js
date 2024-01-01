@@ -30,6 +30,9 @@ function AdminProducts(props) {
   const [dataProduct, setDataProduct] = useState({});
   const [valueSearchProduct, setValueSearchProduct] = useState("");
   const [dataSource, setDataSource] = useState([]);
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+  const [statusFilters, setStatusFilters] = useState([]);
+  const [dateFilters, setDateFilters] = useState([]);
 
   useEffect(() => {
     getProducts()
@@ -39,6 +42,29 @@ function AdminProducts(props) {
         });
 
         setDataSource(sortedData);
+        setFilteredDataSource(sortedData);
+
+        const uniqueStatus = [
+          ...new Set(sortedData.map((item) => item.status)),
+        ];
+        setStatusFilters(
+          uniqueStatus.map((status) => ({
+            text: status,
+            value: status,
+          }))
+        );
+
+        const uniqueDates = [
+          ...new Set(
+            sortedData.map((item) => dayjs(item.createdAt).format("DD/MM/YYYY"))
+          ),
+        ];
+        setDateFilters(
+          uniqueDates.map((date) => ({
+            text: date,
+            value: date,
+          }))
+        );
       })
       .catch((error) => {
         console.log(error);
@@ -56,6 +82,17 @@ function AdminProducts(props) {
               return new Date(b.createdAt) - new Date(a.createdAt);
             });
             setDataSource(sortedData);
+            setFilteredDataSource(sortedData);
+
+            const uniqueStatus = [
+              ...new Set(sortedData.map((item) => item.status)),
+            ];
+            setStatusFilters(
+              uniqueStatus.map((status) => ({
+                text: status,
+                value: status,
+              }))
+            );
           })
           .catch((error) => {
             console.log(error);
@@ -64,6 +101,70 @@ function AdminProducts(props) {
       .catch((error) => {
         console.log("Lỗi khi cập nhật trạng thái:", error);
       });
+  };
+
+  const handleConfirmDeleteProduct = (id) => {
+    console.log("id cua san pham la : " + id);
+    removeProduct(id)
+      .then((res) => {
+        console.log("Xóa thành công", res.data);
+        getProducts()
+          .then((response) => {
+            const sortedData = response.data.sort((a, b) => {
+              return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+            setDataSource(sortedData);
+            setFilteredDataSource(sortedData);
+
+            const uniqueStatus = [
+              ...new Set(sortedData.map((item) => item.status)),
+            ];
+            setStatusFilters(
+              uniqueStatus.map((status) => ({
+                text: status,
+                value: status,
+              }))
+            );
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((error) => {
+        console.log("Lỗi khi cập nhật trạng thái:", error);
+      });
+  };
+
+  const handleDateFilter = (selectedDate) => {
+    if (selectedDate) {
+      const filteredData = dataSource.filter((item) => {
+        const itemDate = dayjs(item.createdAt).startOf("day");
+        const selectedDateStart = dayjs(selectedDate).startOf("day");
+        const selectedDateEnd = dayjs(selectedDate).endOf("day");
+
+        return itemDate.isBetween(
+          selectedDateStart,
+          selectedDateEnd,
+          null,
+          "[]"
+        );
+      });
+
+      setFilteredDataSource(filteredData);
+    } else {
+      setFilteredDataSource(dataSource);
+    }
+  };
+
+  const handleStatusFilter = (selectedStatus) => {
+    if (selectedStatus) {
+      const filteredData = dataSource.filter(
+        (item) => item.status === selectedStatus
+      );
+      setFilteredDataSource(filteredData);
+    } else {
+      setFilteredDataSource(dataSource);
+    }
   };
 
   const renderOptions = (record) => (
@@ -101,13 +202,25 @@ function AdminProducts(props) {
     },
     {
       title: "Ngày đăng",
-      // dataIndex: "createdAt",
-      align: "center",
-      render: (data, res, index) => (
-        <>
-          <p>{dayjs(res?.createdAt).format("DD/MM/YYYY")}</p>
-        </>
-      ),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      filters: [...dateFilters, { text: "Không có ngày", value: "null" }],
+      onFilter: (value, record) => {
+        if (value === "null") {
+          return !record.createdAt;
+        } else {
+          return dayjs(record.createdAt).format("DD/MM/YYYY") === value;
+        }
+      },
+      render: (text, record) => {
+        return (
+          <span>
+            {record.createdAt
+              ? dayjs(record.createdAt).format("DD/MM/YYYY")
+              : "Không có ngày"}
+          </span>
+        );
+      },
     },
     {
       title: "Trạng thái",
@@ -127,6 +240,10 @@ function AdminProducts(props) {
             break;
           case "rejected":
             statusLabel = "Từ chối";
+            statusColor = "Orange";
+            break;
+          case "expired":
+            statusLabel = "Hết hạn";
             statusColor = "red";
             break;
           default:
@@ -170,37 +287,38 @@ function AdminProducts(props) {
       render: (text, record) => renderOptions(record),
     },
   ];
-  const handleConfirmDeleteProduct = (id) => {
-    console.log("id cua san pham la : " + id);
-    removeProduct(id).then((res) => {
-      console.log(res.data);
-      if (res.data.status === true) {
-        getProducts()
-          .then((response) => {
-            setDataSource(response.data.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        notification.success({ message: " Xóa thành công " });
-      }
+
+  const handleSearchProduct = () => {
+    const filteredData = dataSource.filter((item) => {
+      const productName = item.title.toLowerCase();
+      const searchValue = valueSearchProduct.toLowerCase();
+
+      return productName.includes(searchValue);
     });
+
+    setFilteredDataSource(filteredData);
   };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-3 relative ">
         <Space className="ml-5">
-          <Tooltip title="Tìm kiếm sản phẩm">
+          {/* <Tooltip title="Tìm kiếm sản phẩm">
             <Input
               prefix={<SearchOutlined className="opacity-60 mr-1" />}
-              placeholder="Nhập tên sản phẩm"
+              placeholder="Nhập tiêu đề"
               className="shadow-sm w-[250px]"
-              onChange={(e) => {
-                setValueSearchProduct(e.target.value);
-              }}
+              onChange={(e) => setValueSearchProduct(e.target.value)}
               value={valueSearchProduct}
             />
-          </Tooltip>
+            <Button
+              type="primary"
+              onClick={handleSearchProduct}
+              disabled={!valueSearchProduct}
+            >
+              Tìm kiếm
+            </Button>
+          </Tooltip> */}
         </Space>
         <Title
           level={3}
@@ -208,7 +326,7 @@ function AdminProducts(props) {
         >
           Danh sách sản phẩm
         </Title>
-        <Space size={8}>
+        {/* <Space size={8}>
           <Button
             icon={<UserAddOutlined />}
             onClick={() => setOpenForm(true)}
@@ -216,7 +334,7 @@ function AdminProducts(props) {
           >
             Thêm sản phẩm
           </Button>
-        </Space>
+        </Space> */}
       </div>
       {dataSource && (
         <div className="relative  ">

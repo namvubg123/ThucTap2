@@ -19,6 +19,7 @@ const postController = {
         phone,
         locationX,
         locationY,
+        city,
       } = req.body;
 
       const post = new Post({
@@ -37,6 +38,7 @@ const postController = {
         locationX: locationX,
         locationY: locationY,
         phone: phone,
+        city: city,
       });
 
       post.save((error, post) => {
@@ -107,7 +109,7 @@ const postController = {
 
   deletePost: async (req, res) => {
     try {
-      const postId = req.params._id;
+      const postId = req.params.id;
       const deletedPost = await Post.findByIdAndDelete(postId);
 
       if (!deletedPost) {

@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react";
 import "./Slider.css";
-import { Col, Row } from "antd";
+import { Col, Row, Select, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { ShareAltOutlined } from "@ant-design/icons";
 import Product from "../Product";
 import axios from "axios";
 import { useLocation } from "react-router";
+import { getProvinces, getDistricts } from "vietnam-provinces";
+
+const { Option } = Select;
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const { search } = useLocation();
+  const [typeFilter, setTypeFilter] = useState("");
+  const [priceFilter, setPriceFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState("");
+  const [districtFilter, setDistrictFilter] = useState("");
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [cityDistricts, setCityDistricts] = useState({});
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -27,14 +37,59 @@ export default function Home() {
         return (
           postCreatedAt >= thirtyDaysAgo &&
           postCreatedAt <= currentDate &&
-          post.status === "accepted"
+          post.status === "accepted" &&
+          (typeFilter === "" || post.type === typeFilter) &&
+          (priceFilter === "" || checkPriceRange(post.price)) &&
+          (cityFilter === "" || post.city === cityFilter)
         );
       });
 
       setPosts(filteredPosts);
     };
     fetchPosts();
-  }, [search]);
+    const fetchProvinces = () => {
+      const provinces = getProvinces();
+      setProvinces(provinces);
+    };
+
+    const fetchDistricts = () => {
+      const provinces = getProvinces();
+      setProvinces(provinces);
+
+      const districtsByCity = {};
+      provinces.forEach((province) => {
+        const districts = getDistricts(province.code);
+        districtsByCity[province.name] = districts;
+      });
+
+      setCityDistricts(districtsByCity);
+    };
+
+    fetchProvinces();
+    fetchDistricts();
+  }, [search, typeFilter, priceFilter, cityFilter]);
+
+  const checkPriceRange = (price) => {
+    if (priceFilter === "below1") return price < 1000000;
+    if (priceFilter === "1to3") return price >= 1000000 && price < 3000000;
+    if (priceFilter === "3to5") return price >= 3000000 && price < 5000000;
+    if (priceFilter === "above5") return price >= 5000000;
+    return true;
+  };
+
+  const handleCityChange = (value) => {
+    setCityFilter(value);
+
+    const filteredDistricts = cityDistricts[value] || [];
+
+    if (
+      !filteredDistricts.some((district) => district.code === districtFilter)
+    ) {
+      setDistrictFilter("");
+    }
+
+    setDistricts(filteredDistricts);
+  };
 
   return (
     <div>
@@ -45,24 +100,60 @@ export default function Home() {
           <h2>Tìm kiếm một ngôi nhà bạn mơ ước</h2>
 
           <div className="flex mt-6">
-            <form>
-              <input
-                className="p-5 px-8 text-xs rounded-l-md border border-r-0"
-                placeholder="Phân loại"
-              />
-              <input
-                className="p-5 px-8 text-xs border border-r-0"
-                placeholder="Giá tiền"
-              />
-              <input
-                className="p-5 px-8 text-xs border"
-                placeholder="Khu vực"
-              />
-            </form>
-            <button className="btn-search-home">
+            <Select
+              className=" h-16 text-xs border-2 rounded-l-lg bg-white"
+              value={typeFilter}
+              onChange={(value) => setTypeFilter(value)}
+              bordered={false}
+            >
+              <Option value="">Chọn Phân loại</Option>
+              <Option value="NhaTro">Nhà trọ</Option>
+              <Option value="Oghep">Ở ghép</Option>
+              <Option value="CanHo">Căn hộ</Option>
+              <Option value="NhaNguyenCan">Nhà nguyên căn</Option>
+            </Select>
+            <Select
+              className="h-16 text-xs border-y-2 bg-white"
+              value={priceFilter}
+              onChange={(value) => setPriceFilter(value)}
+              bordered={false}
+            >
+              <Option value="">Chọn giá tiền </Option>
+              <Option value="below1">Dưới 1 triệu</Option>
+              <Option value="1to3">1 đến 3 triệu</Option>
+              <Option value="3to5">3 đến 5 triệu</Option>
+              <Option value="above5">Trên 5 triệu</Option>
+            </Select>
+            <Select
+              className="h-16 text-xs border-2 bg-white "
+              value={cityFilter}
+              onChange={handleCityChange}
+              bordered={false}
+            >
+              <Option value="">Chọn thành phố</Option>
+              {provinces.map((province) => (
+                <Option key={province.code} value={province.name}>
+                  {province.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
+              className="h-16 text-xs border-2 bg-white "
+              value={districtFilter}
+              onChange={(value) => setDistrictFilter(value)}
+              bordered={false}
+            >
+              <Option value="">Chọn huyện/quận</Option>
+              {districts.map((district) => (
+                <Option key={district.code} value={district.name}>
+                  {district.name}
+                </Option>
+              ))}
+            </Select>
+            <Button className="btn-search-home" type="primary">
               Search
               <SearchOutlined className="btn-search-i" />
-            </button>
+            </Button>
           </div>
           <p className="text-home"></p>
         </div>

@@ -21,16 +21,21 @@ export default function Login() {
     dispatch({ type: "LOGIN_START" });
     try {
       loginUser(e).then((res) => {
-        if (res.status === 200) {
+        if (res.status === 400) {
+          notification.error({ message: "Đăng nhập thất bại" });
+        } else if (res.status === 200) {
           Cookies.set("token", res.data.token);
           if (res.data.isAdmin === true) {
             notification.success({ message: "Đăng nhập thành công" });
             navigate("/admin");
           } else {
-            sessionStorage.setItem("User", JSON.stringify(res.data));
             notification.success({ message: "Đăng nhập thành công" });
           }
           dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
+        } else if (res.status === 404) {
+          notification.error({ message: "Tài khoản không tồn tại" });
+        } else if (res.status === 401) {
+          notification.error({ message: "Sai mật khẩu" });
         }
       });
     } catch (error) {

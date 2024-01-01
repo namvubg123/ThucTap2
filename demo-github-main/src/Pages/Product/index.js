@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Radio } from "antd";
 import "./Product.css";
 import ItemProduct from "../Item-product";
@@ -15,9 +15,9 @@ export default function Product({ posts }) {
           <div className="col-md-8 ">
             <div className="flex justify-end w-full text-xs font-normal">
               <Radio.Group defaultValue="a" buttonStyle="solid">
-                <Radio.Button value="a">Tất cả</Radio.Button>
+                {/* <Radio.Button value="a">Tất cả</Radio.Button>
                 <Radio.Button value="b">Cao-Thấp</Radio.Button>
-                <Radio.Button value="c">Thấp-Cao</Radio.Button>
+                <Radio.Button value="c">Thấp-Cao</Radio.Button> */}
               </Radio.Group>
             </div>
           </div>

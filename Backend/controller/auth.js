@@ -56,11 +56,13 @@ const auth = {
     User.findOne({ username: req.body.username }).exec(async (error, user) => {
       if (error) return res.status(400).json({ error });
       if (user) {
-        const validPassword = bcrypt.compare(req.body.password, user.password);
+        const validPassword = await bcrypt.compare(
+          req.body.password,
+          user.password
+        );
         if (!validPassword) {
-          res.status(404).json("Wrong password");
-        }
-        if (validPassword) {
+          return res.status(401).json({ message: "Wrong password" });
+        } else {
           const token = auth.createAccessToken(user);
           const refreshToken = auth.createRefreshToken(user);
           refreshTokens.push(refreshToken);
@@ -72,13 +74,9 @@ const auth = {
           });
           const { password, ...others } = user._doc;
           return res.status(200).json({ ...others, token });
-        } else {
-          return res.status(400).json({
-            message: "Something went wrong",
-          });
         }
       } else {
-        return res.status(400).json({ message: "Something went wrong" });
+        return res.status(404).json({ message: "User not found" });
       }
     });
   },

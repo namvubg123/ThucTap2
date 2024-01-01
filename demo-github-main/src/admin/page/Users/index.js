@@ -33,6 +33,33 @@ function AdminUsers(props) {
       });
   }, []);
 
+  const renderOptions = (record) => (
+    <Space size={10}>
+      {/* {record.status === "pending" && (
+        <Tooltip title="Duyệt">
+          <Button
+            icon={<CheckOutlined />}
+            onClick={() => handleConfirmChangeStatus(record, "accepted")}
+          />
+        </Tooltip>
+      )}
+      {record.status === "pending" && (
+        <Tooltip title="Từ chối">
+          <Button
+            icon={<CloseOutlined />}
+            onClick={() => handleConfirmChangeStatus(record, "rejected")}
+          />
+        </Tooltip>
+      )} */}
+      <Tooltip title="Xóa">
+        <Button
+          icon={<DeleteOutlined />}
+          onClick={() => handleConfirmDeleteProduct(record._id)}
+        />
+      </Tooltip>
+    </Space>
+  );
+
   const columns = [
     {
       title: "Tên tài khoản",
@@ -68,24 +95,7 @@ function AdminUsers(props) {
     {
       title: "Tùy chọn",
       align: "center",
-      render: (e, record, index) => (
-        <Space size={10} key={index}>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc chắn muốn xóa người dùng này ?"
-              icon={<DeleteOutlined />}
-              okText="Xóa"
-              okType="danger"
-              onConfirm={() => handleConfirmDeleteProduct(record._id)}
-            >
-              <Button
-                className="flex justify-center items-center text-md shadow-md"
-                icon={<DeleteOutlined />}
-              ></Button>
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
+      render: (text, record) => renderOptions(record),
     },
   ];
   const handleConfirmDeleteProduct = (id) => {
@@ -106,7 +116,7 @@ function AdminUsers(props) {
     <div>
       <div className="flex justify-between items-center mb-3 relative">
         <Space className="ml-5">
-          <Tooltip title="Tìm kiếm người dùng">
+          {/* <Tooltip title="Tìm kiếm người dùng">
             <Input
               prefix={<SearchOutlined className="opacity-60 mr-1" />}
               placeholder="Nhập mã mã người dùng"
@@ -116,7 +126,7 @@ function AdminUsers(props) {
               }}
               value={valueSearchProduct}
             />
-          </Tooltip>
+          </Tooltip> */}
           {/* <Popover trigger={'click'} content={<FormFilter />}>
             <Button icon={<FilterOutlined />} className="flex justify-center items-center">
               Lọc

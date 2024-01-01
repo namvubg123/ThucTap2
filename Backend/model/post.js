@@ -17,6 +17,12 @@ const postSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    city: {
+      type: String,
+    },
+    district: {
+      type: String,
+    },
     address: {
       type: String,
       required: true,
@@ -62,7 +68,7 @@ const postSchema = new mongoose.Schema(
     status: {
       type: String,
       default: "pending",
-      enum: ["pending", "accepted", "rejected"],
+      enum: ["pending", "accepted", "rejected", "expired"],
     },
   },
   { timestamps: true }

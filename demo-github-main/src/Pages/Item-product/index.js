@@ -127,15 +127,15 @@ export default function ItemProduct({ post }) {
                 <a href="" className="flex pt-3">
                   {/* <img src={} className="w-10 h-10 rounded-full "></img> */}
                   <span className="pt-2.5 ml-3 text-xs text-gray-500 font-semibold">
-                    By {post.owner}, {formattedDate}
+                    Đăng bởi {post.owner}, {formattedDate}
                   </span>
                 </a>
-                <Rate
+                {/* <Rate
                   disabled
                   allowHalf
                   defaultValue={3.5}
                   className="text-sm ml-28 pt-5"
-                />
+                /> */}
               </div>
             </div>
           </div>

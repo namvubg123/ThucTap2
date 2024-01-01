@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Modal } from "antd";
-import { SearchOutlined, UserOutlined, BellOutlined } from "@ant-design/icons";
-import { PlusCircleOutlined } from "@ant-design/icons";
-import { Link, useLocation } from "react-router-dom";
-import { Tabs, Input } from "antd";
+import { Modal, Tabs, Input, Dropdown, Menu } from "antd";
+import {
+  UserOutlined,
+  BellOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
+import { Link } from "react-router-dom";
 import Login from "../../Login";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +16,8 @@ import Register from "../../Register";
 import "./Heade.css";
 import Cookies from "js-cookie";
 import { Context } from "../../../context/Context";
+import { getProducts } from "./../../../api/product";
+import { useNavigate } from "react-router-dom";
 
 const items = [
   {
@@ -24,7 +28,7 @@ const items = [
           icon={faRightToBracket}
           style={{ marginRight: "8px" }}
         />
-        Login
+        Đăng nhập
       </span>
     ),
     children: <Login />,
@@ -34,16 +38,18 @@ const items = [
     label: (
       <span>
         <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: "8px" }} />
-        Register
+        Đăng ký
       </span>
     ),
     children: <Register />,
   },
 ];
-
 const logo = require("../../../asset/img/Logo.png");
 const { Search } = Input;
+
 export default function Header() {
+  const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -53,10 +59,46 @@ export default function Header() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const { user, dispatch } = useContext(Context);
+  const { user } = useContext(Context);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const lastName = user ? user.lastName : null;
+  const [post, setPost] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  const handleSearchChange = (event) => {
+    const searchTerm = event.target.value.toLowerCase();
+    const filteredProducts = post.filter((post) =>
+      post.title.toLowerCase().includes(searchTerm)
+    );
+    setSearchResults(filteredProducts);
+    setIsDropdownVisible(searchTerm !== "");
+  };
+
   useEffect(() => {
+    getProducts()
+      .then((response) => {
+        const sortedPosts = response.data.sort((a, b) => {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        const currentDate = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(currentDate.getDate() - 30);
+
+        const filteredPosts = sortedPosts.filter((post) => {
+          const postCreatedAt = new Date(post.createdAt);
+          return (
+            postCreatedAt >= thirtyDaysAgo &&
+            postCreatedAt <= currentDate &&
+            post.status === "accepted"
+          );
+        });
+        setPost(filteredPosts);
+      })
+      .catch((error) => {
+        console.error("Error getting products:", error);
+      });
     const token = Cookies.get("token");
     if (token) {
       setIsLoggedIn(true);
@@ -65,18 +107,40 @@ export default function Header() {
       setIsLoggedIn(false);
     }
   }, [isLoggedIn]);
+
+  const renderDropdownMenu = () => {
+    return (
+      <Menu>
+        {searchResults.slice(0, 7).map((post) => (
+          <Menu.Item key={post._id}>
+            <Link to={`/post/${post._id}`}>{post.title}</Link>
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
+  };
   return (
     <nav className="scroll bg-white  border-gray-200 dark:bg-gray-900 ">
       <div className="">
         <div className=" flex flex-wrap items-center justify-between mx-auto">
-          <a href="#" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img src={logo} className="h-12 mr-3" />
-          </a>
-          {/* <button className="button-header-search">
-                        <SearchOutlined className='text-blue-600 font-extrabold mr-2 text-sm' />
-                        <text className="text-xs">Search...</text>
-                    </button> */}
-          <Search placeholder="Search..." style={{ width: 400 }} />
+          </Link>
+          <div>
+            <Dropdown
+              getPopupContainer={(trigger) => trigger.parentNode}
+              overlay={renderDropdownMenu()}
+              placement="bottomLeft"
+            >
+              <Search
+                placeholder="Search..."
+                style={{ width: 400 }}
+                onChange={handleSearchChange}
+                onFocus={() => setIsDropdownVisible(true)}
+                onBlur={() => setIsDropdownVisible(false)}
+              />
+            </Dropdown>
+          </div>
           <div
             className="hidden w-full md:block md:w-auto mr-5  "
             id="navbar-default"
@@ -156,8 +220,18 @@ export default function Header() {
                 <BellOutlined />
                 {/* <span className="count">5</span> */}
               </li>
-              <button className="px-4 btn-add">
-                <Link to="/addlisting" className="mt-0 flex items-center">
+              <button
+                className="px-4 btn-add"
+                onClick={() => {
+                  if (!user) {
+                    setIsModalOpen(true);
+                  } else {
+                    // Navigate to add listing page
+                    navigate("/addlisting");
+                  }
+                }}
+              >
+                <Link className="mt-0 flex items-center">
                   <PlusCircleOutlined className="icon-add" />
                   <span className="ml-3 text-xs">Đăng bài</span>
                 </Link>
