@@ -23,6 +23,9 @@ const postSchema = new mongoose.Schema(
     district: {
       type: String,
     },
+    ward: {
+      type: String,
+    },
     address: {
       type: String,
       required: true,

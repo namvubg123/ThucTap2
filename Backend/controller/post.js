@@ -20,6 +20,8 @@ const postController = {
         locationX,
         locationY,
         city,
+        district,
+        ward,
       } = req.body;
 
       const post = new Post({
@@ -39,6 +41,8 @@ const postController = {
         locationY: locationY,
         phone: phone,
         city: city,
+        district: district,
+        ward: ward,
       });
 
       post.save((error, post) => {

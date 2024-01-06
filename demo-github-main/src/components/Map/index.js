@@ -12,10 +12,10 @@ const LocationPin = ({ text }) => (
 );
 
 function MapLocation(post) {
-  //   console.log(post);
+  console.log(post);
   return (
     <div className="map">
-      <h2 className="map-h2">Come Visit Us At Our Campus</h2>
+      <h2 className="map-h2">{post.location.address}</h2>
 
       <div className="google-map">
         <GoogleMapReact

@@ -6,7 +6,7 @@ import { ShareAltOutlined } from "@ant-design/icons";
 import Product from "../Product";
 import axios from "axios";
 import { useLocation } from "react-router";
-import { getProvinces, getDistricts } from "vietnam-provinces";
+import { getProvinces, getDistricts, getWards } from "vietnam-provinces";
 
 const { Option } = Select;
 
@@ -17,9 +17,12 @@ export default function Home() {
   const [priceFilter, setPriceFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [districtFilter, setDistrictFilter] = useState("");
+  const [wardFilter, setWardFilter] = useState("");
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
   const [cityDistricts, setCityDistricts] = useState({});
+  const [wardDistricts, setWardDistricts] = useState({});
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -40,13 +43,16 @@ export default function Home() {
           post.status === "accepted" &&
           (typeFilter === "" || post.type === typeFilter) &&
           (priceFilter === "" || checkPriceRange(post.price)) &&
-          (cityFilter === "" || post.city === cityFilter)
+          (cityFilter === "" || post.city === cityFilter) &&
+          (districtFilter === "" || post.district === districtFilter) &&
+          (wardFilter === "" || post.ward === wardFilter)
         );
       });
 
       setPosts(filteredPosts);
     };
     fetchPosts();
+
     const fetchProvinces = () => {
       const provinces = getProvinces();
       setProvinces(provinces);
@@ -64,10 +70,34 @@ export default function Home() {
 
       setCityDistricts(districtsByCity);
     };
+    const fetchWards = () => {
+      const provinces = getProvinces();
+      setProvinces(provinces);
+
+      const districtsByCity = {};
+      const wardsByDistricts = {};
+
+      provinces.forEach((province) => {
+        const districts = getDistricts(province.code);
+        districtsByCity[province.name] = districts;
+
+        districts.forEach((district) => {
+          const wards = getWards(district.code);
+          wardsByDistricts[district.name] = wards;
+        });
+      });
+
+      setCityDistricts(districtsByCity);
+      setWardDistricts(wardsByDistricts);
+
+      const filteredWards = wardsByDistricts[districtFilter] || [];
+      setWards(filteredWards);
+    };
 
     fetchProvinces();
     fetchDistricts();
-  }, [search, typeFilter, priceFilter, cityFilter]);
+    fetchWards();
+  }, [search, typeFilter, priceFilter, cityFilter, districtFilter, wardFilter]);
 
   const checkPriceRange = (price) => {
     if (priceFilter === "below1") return price < 1000000;
@@ -81,14 +111,36 @@ export default function Home() {
     setCityFilter(value);
 
     const filteredDistricts = cityDistricts[value] || [];
+    const filteredWards = wardDistricts[value] || [];
 
     if (
-      !filteredDistricts.some((district) => district.code === districtFilter)
+      !filteredDistricts.some((district) => district.name === districtFilter)
     ) {
       setDistrictFilter("");
     }
 
+    if (!filteredWards.some((ward) => ward.name === wardFilter)) {
+      setWardFilter("");
+    }
+
     setDistricts(filteredDistricts);
+    setWards(filteredWards);
+  };
+
+  const handleDistrictChange = (value) => {
+    setDistrictFilter(value);
+
+    const filteredWards = wardDistricts[cityFilter] || [];
+
+    if (!filteredWards.some((ward) => ward.name === wardFilter)) {
+      setWardFilter("");
+    }
+
+    setWards(filteredWards);
+  };
+
+  const handleWardChange = (value) => {
+    setWardFilter(value);
   };
 
   return (
@@ -140,13 +192,26 @@ export default function Home() {
             <Select
               className="h-16 text-xs border-2 bg-white "
               value={districtFilter}
-              onChange={(value) => setDistrictFilter(value)}
+              onChange={handleDistrictChange}
               bordered={false}
             >
               <Option value="">Chọn huyện/quận</Option>
               {districts.map((district) => (
                 <Option key={district.code} value={district.name}>
                   {district.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
+              className="h-16 text-xs border-2 bg-white"
+              value={wardFilter}
+              onChange={handleWardChange}
+              bordered={false}
+            >
+              <Option value="">Chọn phường/xã</Option>
+              {wards.map((ward) => (
+                <Option key={ward.code} value={ward.name}>
+                  {ward.name}
                 </Option>
               ))}
             </Select>

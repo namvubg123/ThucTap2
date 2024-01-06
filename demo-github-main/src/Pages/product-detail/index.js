@@ -155,13 +155,6 @@ export default function ProductDetail() {
                     </Col>
                     <Col className="gutter-row" span={6}>
                       <div className="item-properties">
-                        <FontAwesomeIcon className="icon-pro" icon={faUsers} />
-                        <h4 className="title-item-pro">Số người ở</h4>
-                        <span className="des-item-pro">6 </span>
-                      </div>
-                    </Col>
-                    <Col className="gutter-row" span={6}>
-                      <div className="item-properties">
                         <FontAwesomeIcon className="icon-pro" icon={faBed} />
                         <h4 className="title-item-pro">Phòng ngủ</h4>
                         <span className="des-item-pro">{post.bedrooms}</span>
@@ -172,6 +165,13 @@ export default function ProductDetail() {
                         <FontAwesomeIcon className="icon-pro" icon={faBath} />
                         <h4 className="title-item-pro">Phòng tắm</h4>
                         <span className="des-item-pro">{post.bathrooms}</span>
+                      </div>
+                    </Col>
+                    <Col className="gutter-row" span={6}>
+                      <div className="item-properties">
+                        <FontAwesomeIcon className="icon-pro" icon={faUsers} />
+                        <h4 className="title-item-pro">Chỗ để xe</h4>
+                        <span className="des-item-pro">{post.gara}</span>
                       </div>
                     </Col>
                   </Row>

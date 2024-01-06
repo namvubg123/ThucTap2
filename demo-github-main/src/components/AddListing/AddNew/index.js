@@ -31,7 +31,7 @@ import axios from "axios";
 import { storage, db } from "../../../firebase";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import Pay from "../../../Pages/Pay";
-import { getProvinces, getDistricts } from "vietnam-provinces";
+import { getProvinces, getDistricts, getWards } from "vietnam-provinces";
 
 const CheckboxGroup = Checkbox.Group;
 const plainOptions = ["Wifi", "Nóng lạnh", "Điều hòa"];
@@ -85,9 +85,12 @@ function AddNew() {
   const [images, setImages] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
   const [cityDistricts, setCityDistricts] = useState({});
+  const [wardDistricts, setWardDistricts] = useState({});
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
   const [type, setType] = useState("Phòng trọ");
 
   const handleTypeChange = (value) => {
@@ -97,12 +100,32 @@ function AddNew() {
     setCity(value);
 
     const filteredDistricts = cityDistricts[value] || [];
+    const filteredWards = wardDistricts[value] || [];
 
     if (!filteredDistricts.some((district) => district.code === district)) {
       setDistrict("");
     }
+    if (!filteredWards.some((ward) => ward.code === ward)) {
+      setWard("");
+    }
 
     setDistricts(filteredDistricts);
+    setWards(filteredWards);
+  };
+  const handleDistrictChange = (value) => {
+    setDistrict(value);
+
+    const filteredWards = wardDistricts[city] || [];
+
+    if (!filteredWards.some((ward) => ward.name === ward)) {
+      setWard("");
+    }
+
+    setWards(filteredWards);
+  };
+
+  const handleWardChange = (value) => {
+    setWard(value);
   };
 
   const handleSubmit = async (e) => {
@@ -155,6 +178,7 @@ function AddNew() {
         type,
         city,
         district,
+        ward,
         images: downloadURLs,
         feature: checkedList,
       };
@@ -194,9 +218,34 @@ function AddNew() {
       setCityDistricts(districtsByCity);
     };
 
+    const fetchWards = () => {
+      const provinces = getProvinces();
+      setProvinces(provinces);
+
+      const districtsByCity = {};
+      const wardsByDistricts = {};
+
+      provinces.forEach((province) => {
+        const districts = getDistricts(province.code);
+        districtsByCity[province.name] = districts;
+
+        districts.forEach((district) => {
+          const wards = getWards(district.code);
+          wardsByDistricts[district.name] = wards;
+        });
+      });
+
+      setCityDistricts(districtsByCity);
+      setWardDistricts(wardsByDistricts);
+
+      const filteredWards = wardsByDistricts[district] || [];
+      setWards(filteredWards);
+    };
+
     fetchProvinces();
     fetchDistricts();
-  }, [handleChangeLocation]);
+    fetchWards();
+  }, [handleChangeLocation, district]);
 
   const props = {
     name: "file",
@@ -279,13 +328,37 @@ function AddNew() {
                     <Select
                       className=""
                       value={district}
-                      onChange={(value) => setDistrict(value)}
+                      onChange={handleDistrictChange}
                       bordered={false}
                     >
                       <Option value="">Chọn huyện/quận</Option>
                       {districts.map((district) => (
                         <Option key={district.code} value={district.name}>
                           {district.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  </ul>
+                </div>
+              </Col>
+              <Col className="gutter-row text-xs" span={8}>
+                <div>
+                  <h5 className="pb-2 ">Phường/Xã</h5>
+                  <ul className="input-item ">
+                    <FontAwesomeIcon
+                      icon={faLocationPin}
+                      className="p-4 text-blue-500"
+                    />
+                    <Select
+                      className=""
+                      value={ward}
+                      onChange={handleWardChange}
+                      bordered={false}
+                    >
+                      <Option value="">Chọn phường/xã</Option>
+                      {wards.map((ward) => (
+                        <Option key={ward.code} value={ward.name}>
+                          {ward.name}
                         </Option>
                       ))}
                     </Select>

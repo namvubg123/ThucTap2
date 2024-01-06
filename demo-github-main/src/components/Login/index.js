@@ -84,7 +84,7 @@ export default function Login() {
           onClick={() => onFinish(valueLogin)}
           disabled={isFetching}
         >
-          Login
+          Đăng nhập
         </button>
       </form>
     </div>

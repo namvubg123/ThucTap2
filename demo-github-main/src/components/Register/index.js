@@ -17,20 +17,19 @@ function Register() {
     password,
     lastName,
   };
-  const handleRegister = (values) => {
-    console.log(values);
-    registerUser(values).then(
-      (res) => {
-        console.log(res);
-        notification.success({ message: " Đăng kí thành công " });
-      },
-      (err) => {
-        console.log(err);
-        if (err) {
-          notification.error({ message: " Đăng kí thất bại" });
-        }
+  const handleRegister = async (values) => {
+    try {
+      const res = await registerUser(values);
+      console.log(res);
+      if (res.status === 200) {
+        notification.success({ message: "Đăng kí thành công" });
+      } else {
+        notification.error({ message: "Đăng kí thất bại" });
       }
-    );
+    } catch (err) {
+      console.log(err);
+      notification.error({ message: "Đăng kí thất bại" });
+    }
   };
 
   return (
@@ -85,7 +84,7 @@ function Register() {
           type="submit"
           onClick={() => handleRegister(valueRegister)}
         >
-          Register
+          Đăng ký
         </button>
         {error && (
           <span style={{ color: "red", marginTop: "10px" }}>

@@ -282,6 +282,16 @@ function AdminProducts(props) {
       align: "center",
     },
     {
+      title: "Diện tích",
+      dataIndex: "area",
+      align: "center",
+    },
+    {
+      title: "Người đăng",
+      dataIndex: "owner",
+      align: "center",
+    },
+    {
       title: "Tùy chọn",
       align: "center",
       render: (text, record) => renderOptions(record),
